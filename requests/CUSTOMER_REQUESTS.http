@@ -1,0 +1,28 @@
+### =========================================
+### FASE 4.1: PRUEBAS DE CLIENTE (QR Y COMANDAS)
+### =========================================
+
+### 1. Escanear/Generar QR de la Mesa 5
+GET http://localhost:8080/qr/table/5
+Accept: image/png
+
+### 2. Crear una nueva comanda (El cliente hace el pedido)
+POST http://localhost:8080/orders
+Content-Type: application/json
+Authorization: Bearer <TU_TOKEN_JWT_AQUI>
+
+{
+  "tableNumber": 5,
+  "items": [
+    {
+      "productId": 1,
+      "quantity": 2,
+      "notes": "Sin cebolla por favor"
+    },
+    {
+      "productId": 3,
+      "quantity": 1,
+      "notes": "Muy hecho"
+    }
+  ]
+}

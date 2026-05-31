@@ -14,7 +14,7 @@
 - [x] 3.1: Implementar CRUD de productos (`ProductController`, `ProductService`, DTOs).
 
 ## 🔲 Fase 4: `feature/order-processing`
-- [ ] 4.1: Creación de comandas, generación de QR y subtotales.
+- [x] 4.1: Creación de comandas, generación de QR y subtotales.
 - [ ] 4.2: Gestión de estados y colas de cocina.
 
 ## 🔲 Fase 5: `feature/payments-billing`
@@ -35,7 +35,7 @@
 - [ ] 8.2: Implementar Agente Autónomo con `@Tool` y llamadas MCP.
 
 ## 🔲 Fase 9: `bugfix/final-adjustments`
-- [ ] 9.1: Manejo global de excepciones y validaciones `@Valid`.
+- [ ] 9.1: Manejo global de excepciones, validaciones `@Valid`, crear file para request.http
 
 ## 🔲 Fase 10: `release/v1.0`
 - [ ] 10.1: Ocultar credenciales e higienizar propiedades.
