@@ -6,12 +6,12 @@
 - [x] 1.3: Añadir diagramas de arquitectura, roadmap y plantillas HTTP.
 
 ## 🔲 Fase 2: `feature/auth-security`
-- [ ] 2.1: Implementar lógica JWT (`JwtAuthenticationFilter`, `JwtService`).
-- [ ] 2.2: Crear `AuthController`, `AuthenticationService` y DTOs de Auth.
-- [ ] 2.3: Configurar control de accesos en `SecurityConfig`.
+- [x] 2.1: Implementar lógica JWT (`JwtAuthenticationFilter`, `JwtService`).
+- [x] 2.2: Crear `AuthController`, `AuthenticationService` y DTOs de Auth.
+- [x] 2.3: Configurar control de accesos en `SecurityConfig`.
 
 ## 🔲 Fase 3: `feature/catalog-management`
-- [ ] 3.1: Implementar CRUD de productos (`ProductController`, `ProductService`, DTOs).
+- [x] 3.1: Implementar CRUD de productos (`ProductController`, `ProductService`, DTOs).
 
 ## 🔲 Fase 4: `feature/order-processing`
 - [ ] 4.1: Creación de comandas, generación de QR y subtotales.
