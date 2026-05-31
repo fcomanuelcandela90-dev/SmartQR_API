@@ -1,30 +1,44 @@
 ### =========================================
-### FASE 3: PRUEBAS DE PRODUCTOS
+### AUTENTICACIÓN ADMINISTRADOR - ADMIN LOGIN
 ### =========================================
 
-### 1. [CUSTOMER] Ver el menú disponible (Público)
-GET http://localhost:8080/products/menu
-Accept: application/json
+### 0. Login administrador y guardar token JWT automáticamente
 
-### 2. [ADMIN] Ver todos los productos
+POST http://localhost:8080/api/login
+Content-Type: application/json
+
+{
+"username": "<ADMIN_EMAIL>",
+"password": "<ADMIN_PASSWORD>"
+}
+
+> {%
+client.global.set("adminToken", response.body.access_token);
+%}
+
+### =========================================
+###         PRUEBAS DE PRODUCTOS
+### =========================================
+
+### 1. [ADMIN] Ver todos los productos
 GET http://localhost:8080/products
 Accept: application/json
-Authorization: Bearer <TU_TOKEN_AQUI>
+Authorization: Bearer {{adminToken}}
 
-### 3. [ADMIN] Crear un producto nuevo
+### 2. [ADMIN] Crear un producto nuevo
 POST http://localhost:8080/products
 Content-Type: application/json
-Authorization: Bearer <TU_TOKEN_AQUI>
+Authorization: Bearer {{adminToken}}
 
 {
   "name": "Montadito de Jamón",
   "description": "Jamón ibérico con aceite",
   "price": 2.50,
-  "category": "FOOD",
+  "category": "MONTADITO",
   "imageUrl": "https://ejemplo.com/jamon.png"
 }
 
-### 4. [ADMIN] Ver productos sin stock
+### 3. [ADMIN] Ver productos sin stock
 GET http://localhost:8080/products/out-of-stock
 Accept: application/json
-Authorization: Bearer <TU_TOKEN_AQUI>
+Authorization: Bearer {{adminToken}}
