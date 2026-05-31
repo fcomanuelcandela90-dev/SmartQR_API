@@ -68,6 +68,92 @@ public class OrderService {
         return mapToOrderResponse(savedOrder);
     }
 
+    public List<OrderResponse> getOrdersByTable(Integer tableNumber) {
+        List<Order> orders = orderRepository.findByTableNumber(tableNumber);
+        List<OrderResponse> responseList = new ArrayList<>();
+        for (Order order : orders) {
+            responseList.add(mapToOrderResponse(order));
+        }
+        return responseList;
+    }
+
+    public OrderResponse getOrderById(Long orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order ID not found: " + orderId));
+        return mapToOrderResponse(order);
+    }
+
+    public List<OrderResponse> getKitchenQueue() {
+        List<OrderStatus> activeStatuses = new ArrayList<>();
+        activeStatuses.add(OrderStatus.PENDING);
+        activeStatuses.add(OrderStatus.IN_KITCHEN);
+
+        List<Order> activeOrders = orderRepository.findByStatusIn(activeStatuses);
+        List<OrderResponse> responseList = new ArrayList<>();
+        for (Order order : activeOrders) {
+            responseList.add(mapToOrderResponse(order));
+        }
+        return responseList;
+    }
+
+    @Transactional
+    public OrderResponse updateOrderStatus(Long orderId, OrderStatus newStatus) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order ID not found: " + orderId));
+        order.setStatus(newStatus);
+        return mapToOrderResponse(orderRepository.save(order));
+    }
+
+    @Transactional
+    public OrderResponse cancelOrder(Long orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order ID not found: " + orderId));
+
+        if (order.getStatus() == OrderStatus.IN_KITCHEN || order.getStatus() == OrderStatus.READY || order.getStatus() == OrderStatus.DELIVERED) {
+            throw new IllegalStateException("No se puede cancelar un pedido que ya está en preparación, listo o entregado.");
+        }
+        order.setStatus(OrderStatus.CANCELLED);
+        return mapToOrderResponse(orderRepository.save(order));
+    }
+
+    @Transactional
+    public OrderResponse updateOrderItems(Long orderId, List<OrderItemRequest> newItemsRequest) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order ID not found: " + orderId));
+
+        if (order.getStatus() != OrderStatus.PENDING) {
+            throw new IllegalStateException("Solo se pueden modificar las líneas de un pedido en estado PENDING.");
+        }
+
+        order.getOrderItems().clear();
+
+        BigDecimal totalAcumulator = BigDecimal.ZERO;
+        List<OrderItem> updatedItems = new ArrayList<>();
+
+        for (OrderItemRequest itemRequest : newItemsRequest) {
+            Product product = productRepository.findById(itemRequest.productId())
+                    .orElseThrow(() -> new RuntimeException("Product ID not found: " + itemRequest.productId()));
+
+            BigDecimal subTotalLine = product.getPrice().multiply(BigDecimal.valueOf(itemRequest.quantity()));
+            totalAcumulator = totalAcumulator.add(subTotalLine);
+
+            OrderItem orderItem = new OrderItem();
+            orderItem.setOrder(order);
+            orderItem.setProduct(product);
+            orderItem.setQuantity(itemRequest.quantity());
+            orderItem.setSubTotal(subTotalLine);
+            orderItem.setNotes(itemRequest.notes());
+
+            updatedItems.add(orderItem);
+        }
+
+        order.getOrderItems().addAll(updatedItems);
+        order.setTotalPrice(totalAcumulator);
+
+        Order savedOrder = orderRepository.save(order);
+        return mapToOrderResponse(savedOrder);
+    }
+
     public OrderResponse mapToOrderResponse(Order order) {
         List<OrderItemResponse> itemResponses = new ArrayList<>();
         for (OrderItem item : order.getOrderItems()) {

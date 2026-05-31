@@ -1,0 +1,44 @@
+### =========================================
+### FASE 4.2: PRUEBAS DE EMPLEADO (COCINA Y MOSTRADOR)
+### =========================================
+
+### 1. Ver la cola de cocina (Muestra pedidos PENDING e IN_KITCHEN)
+# IMPORTANTE: Reemplaza <TU_TOKEN_JWT_AQUI> por el token de un empleado
+GET http://localhost:8080/orders/kitchen/queue
+Accept: application/json
+Authorization: Bearer <TU_TOKEN_JWT_AQUI>
+
+### 2. El cocinero coge la comanda: Cambiar estado a IN_KITCHEN
+PATCH http://localhost:8080/orders/1/status?status=IN_KITCHEN
+Accept: application/json
+Authorization: Bearer <TU_TOKEN_JWT_AQUI>
+
+### 3. El cliente cambia de idea en mostrador: Modificar items
+# Solo funcionará si el estado sigue siendo PENDING
+PUT http://localhost:8080/orders/1/items
+Content-Type: application/json
+Authorization: Bearer <TU_TOKEN_JWT_AQUI>
+
+[
+  {
+    "productId": 1,
+    "quantity": 3,
+    "notes": "Al final queremos 3 montaditos, muy hechos"
+  },
+  {
+    "productId": 2,
+    "quantity": 1,
+    "notes": "Añadimos unas patatas bravas"
+  }
+]
+
+### 4. El cocinero termina: Marcar pedido como listo para servir (READY)
+PATCH http://localhost:8080/orders/1/status?status=READY
+Accept: application/json
+Authorization: Bearer <TU_TOKEN_JWT_AQUI>
+
+### 5. Anular un pedido desde caja
+# Lanzará error si ya está IN_KITCHEN o READY
+PUT http://localhost:8080/orders/1/cancel
+Accept: application/json
+Authorization: Bearer <TU_TOKEN_JWT_AQUI>

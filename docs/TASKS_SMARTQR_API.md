@@ -35,7 +35,7 @@
 - [ ] 8.2: Implementar Agente Autónomo con `@Tool` y llamadas MCP.
 
 ## 🔲 Fase 9: `bugfix/final-adjustments`
-- [ ] 9.1: Manejo global de excepciones, validaciones `@Valid`, crear file para request.http
+- [ ] 9.1: Manejo global de excepciones, validaciones `@Valid`.
 
 ## 🔲 Fase 10: `release/v1.0`
 - [ ] 10.1: Ocultar credenciales e higienizar propiedades.

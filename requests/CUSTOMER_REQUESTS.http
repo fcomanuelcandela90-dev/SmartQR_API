@@ -26,3 +26,18 @@ Authorization: Bearer <TU_TOKEN_JWT_AQUI>
     }
   ]
 }
+
+### =========================================
+### FASE 4.2: PRUEBAS DE CLIENTE (CONSULTAS)
+### =========================================
+
+### 1. Ver el estado de un pedido concreto (Ej: Pedido ID 1)
+# IMPORTANTE: Reemplaza <TU_TOKEN_JWT_AQUI> por un token válido
+GET http://localhost:8080/orders/1
+Accept: application/json
+Authorization: Bearer <TU_TOKEN_JWT_AQUI>
+
+### 2. Ver todos los pedidos activos de tu mesa (Ej: Mesa 5)
+GET http://localhost:8080/orders/table/5
+Accept: application/json
+Authorization: Bearer <TU_TOKEN_JWT_AQUI>
