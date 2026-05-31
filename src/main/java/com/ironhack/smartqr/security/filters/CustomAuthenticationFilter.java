@@ -39,11 +39,11 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
             ObjectMapper mapper = new ObjectMapper();
             LoginRequest loginRequest = mapper.readValue(request.getInputStream(), LoginRequest.class);
 
-            log.info("Intento de login para usuario: {}", loginRequest.getUsername());
+            log.info("User login attempt: {}", loginRequest.username());
 
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                    loginRequest.getUsername(),
-                    loginRequest.getPassword()
+                    loginRequest.username(),
+                    loginRequest.password()
             );
 
             return authenticationManager.authenticate(authenticationToken);
