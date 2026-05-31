@@ -1,0 +1,30 @@
+### =========================================
+### FASE 3: PRUEBAS DE PRODUCTOS
+### =========================================
+
+### 1. [CUSTOMER] Ver el menú disponible (Público)
+GET http://localhost:8080/products/menu
+Accept: application/json
+
+### 2. [ADMIN] Ver todos los productos
+GET http://localhost:8080/products
+Accept: application/json
+Authorization: Bearer <TU_TOKEN_AQUI>
+
+### 3. [ADMIN] Crear un producto nuevo
+POST http://localhost:8080/products
+Content-Type: application/json
+Authorization: Bearer <TU_TOKEN_AQUI>
+
+{
+  "name": "Montadito de Jamón",
+  "description": "Jamón ibérico con aceite",
+  "price": 2.50,
+  "category": "FOOD",
+  "imageUrl": "https://ejemplo.com/jamon.png"
+}
+
+### 4. [ADMIN] Ver productos sin stock
+GET http://localhost:8080/products/out-of-stock
+Accept: application/json
+Authorization: Bearer <TU_TOKEN_AQUI>
