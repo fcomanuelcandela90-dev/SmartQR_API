@@ -1,16 +1,47 @@
 ### =========================================
-###         PRUEBAS DE CLIENTE
-###          (QR Y COMANDAS)
+###     AUTENTICACIÓN CLIENTE - CUSTOMER
 ### =========================================
 
-### 1. Escanear/Generar QR de la Mesa 5
+### 0 Registrar nuevo cliente
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+
+{
+  "name": "Francisco Manuel Candela",
+  "email": "fran.customer@smartqr.com",
+  "password": "Customer123!"
+}
+
+### 0.1 Login cliente y guardar token JWT automáticamente
+POST http://localhost:8080/api/login
+Content-Type: application/json
+
+{
+  "username": "fran.customer@smartqr.com",
+  "password": "Customer123!"
+}
+
+> {%
+client.global.set("customerToken", response.body.access_token);
+%}
+
+### =========================================
+###         PRUEBAS DE CLIENTE
+###         (CARTA, QR Y COMANDAS)
+### =========================================
+GET http://localhost:8080/products
+Accept: application/json
+Authorization: Bearer {{customerToken}}
+
+### 1. Escanear QR de la Mesa 5
 GET http://localhost:8080/qr/table/5
 Accept: image/png
+Authorization: Bearer {{customerToken}}
 
 ### 2. Crear una nueva comanda (El cliente hace el pedido)
 POST http://localhost:8080/orders
 Content-Type: application/json
-Authorization: Bearer <TU_TOKEN_JWT_AQUI>
+Authorization: Bearer {{customerToken}}
 
 {
   "tableNumber": 5,
@@ -29,29 +60,29 @@ Authorization: Bearer <TU_TOKEN_JWT_AQUI>
 }
 
 ### =========================================
-###     PRUEBAS DE CLIENTE (CONSULTAS)
+###          PRUEBAS DE CLIENTE
+###             (CONSULTAS)
 ### =========================================
 
-### 1. Ver el estado de un pedido concreto (Ej: Pedido ID 1)
-# IMPORTANTE: Reemplaza <TU_TOKEN_JWT_AQUI> por un token válido
+### 3. Ver el estado de un pedido concreto (Ej: Pedido ID 1)
 GET http://localhost:8080/orders/1
 Accept: application/json
-Authorization: Bearer <TU_TOKEN_JWT_AQUI>
+Authorization: Bearer {{customerToken}}
 
-### 2. Ver todos los pedidos activos de tu mesa (Ej: Mesa 5)
+### 4. Ver todos los pedidos activos de tu mesa (Ej: Mesa 5)
 GET http://localhost:8080/orders/table/5
 Accept: application/json
-Authorization: Bearer <TU_TOKEN_JWT_AQUI>
+Authorization: Bearer {{customerToken}}
 
 ### =========================================
-###         PRUEBAS DE PAGO
+###     PRUEBAS DE PAGO y RECIBO TICKET
 ### =========================================
 
-### 1. Pagar con Tarjeta de Crédito (Pasa el pedido a IN_KITCHEN directamente)
-# IMPORTANTE: Reemplaza <TU_TOKEN_JWT_AQUI>
+### 5. Pagar con Tarjeta de Crédito (Pasa el pedido a IN_KITCHEN directamente)
+
 POST http://localhost:8080/payments/card
 Content-Type: application/json
-Authorization: Bearer <TU_TOKEN_JWT_AQUI>
+Authorization: Bearer {{customerToken}}
 
 {
   "orderId": 1,
@@ -60,13 +91,54 @@ Authorization: Bearer <TU_TOKEN_JWT_AQUI>
   "transactionId": "txn_stripe_987654321"
 }
 
-### 2. Solicitar pago en Efectivo en caja
-# (El cliente avisa que va a pagar con un billete de 20€. El pedido se queda PENDING)
+### 6. Solicitar pago en Efectivo en caja (El cliente avisa que va a pagar con un billete de 20€. El pedido se queda PENDING)
 POST http://localhost:8080/payments/cash/request
 Content-Type: application/json
-Authorization: Bearer <TU_TOKEN_JWT_AQUI>
+Authorization: Bearer {{customerToken}}
 
 {
   "orderId": 1,
   "cashReceived": 20.00
 }
+
+### 7. Descargar ticket de pago (El cliente solicita el ticket del pedido con ID 1)
+GET http://localhost:8080/payments/ticket/1
+Accept: text/plain
+Authorization: Bearer {{customerToken}}
+
+### =========================================
+###  VALIDACIÓN CASH - IMPORTE INSUFICIENTE
+### =========================================
+### 7. Crear un segundo pedido para probar efectivo insuficiente
+
+POST http://localhost:8080/orders
+Content-Type: application/json
+Authorization: Bearer {{customerToken}}
+
+{
+"tableNumber": 5,
+"items": [
+{
+"productId": 16,
+"quantity": 2,
+"notes": "Prueba de efectivo insuficiente"
+}
+]
+}
+
+###8. Intentar pagar el pedido 2 con efectivo insuficiente (El pedido cuesta más de 1.00 EUR y la solicitud debe ser rechazada)
+
+POST http://localhost:8080/payments/cash/request
+Content-Type: application/json
+Authorization: Bearer {{customerToken}}
+
+{
+"orderId": 2,
+"cashReceived": 1.00
+}
+
+### 9. Confirmar que no existe ticket para el pedido 2 no pagado
+
+GET http://localhost:8080/payments/ticket/2
+Accept: text/plain
+Authorization: Bearer {{customerToken}}

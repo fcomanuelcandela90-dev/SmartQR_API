@@ -1,21 +1,40 @@
 ### =========================================
+###  AUTENTICACIÓN EMPLEADO - EMPLOYEE LOGIN
+### =========================================
+
+
+### 0 Login empleado y guardar token JWT automáticamente
+
+POST http://localhost:8080/api/login
+Content-Type: application/json
+
+{
+"username": "<EMPLOYEE_EMAIL>",
+"password": "<EMPLOYEE_PASSWORD>"
+}
+
+> {%
+client.global.set("employeeToken", response.body.access_token);
+%}
+
+### =========================================
 ### FASE 4.2: PRUEBAS DE EMPLEADO (COCINA Y MOSTRADOR)
 ### =========================================
 
 ### 1. Ver la cola de cocina (Muestra pedidos PENDING e IN_KITCHEN)
 GET http://localhost:8080/orders/kitchen/queue
 Accept: application/json
-Authorization: Bearer <TU_TOKEN_JWT_AQUI>
+Authorization: Bearer {{employeeToken}}
 
 ### 2. El cocinero coge la comanda: Cambiar estado a IN_KITCHEN
 PATCH http://localhost:8080/orders/1/status?status=IN_KITCHEN
 Accept: application/json
-Authorization: Bearer <TU_TOKEN_JWT_AQUI>
+Authorization: Bearer {{employeeToken}}
 
 ### 3. El cliente cambia de idea en mostrador: Modificar items (Solo funcionará si el estado sigue siendo PENDING)
 PUT http://localhost:8080/orders/1/items
 Content-Type: application/json
-Authorization: Bearer <TU_TOKEN_JWT_AQUI>
+Authorization: Bearer {{employeeToken}}
 
 [
   {
@@ -33,19 +52,18 @@ Authorization: Bearer <TU_TOKEN_JWT_AQUI>
 ### 4. El cocinero termina: Marcar pedido como listo para servir (READY)
 PATCH http://localhost:8080/orders/1/status?status=READY
 Accept: application/json
-Authorization: Bearer <TU_TOKEN_JWT_AQUI>
+Authorization: Bearer {{employeeToken}}
 
 ### 5. Anular un pedido desde caja (Lanzará error si ya está IN_KITCHEN o READY)
 PUT http://localhost:8080/orders/1/cancel
 Accept: application/json
-Authorization: Bearer <TU_TOKEN_JWT_AQUI>
+Authorization: Bearer {{employeeToken}}
 
 ### =========================================
-###        PRUEBAS DE PAGO EN CASH
+###       PRUEBAS DE PAGO EN EFECTIVO
 ### =========================================
 
-### 1. Confirmar pago en Efectivo (El cajero recibe el dinero y pasa el pedido a IN_KITCHEN)
-# IMPORTANTE: Reemplaza <TU_TOKEN_JWT_AQUI> por el token de un empleado
+### 6. Confirmar pago en Efectivo (El cajero recibe el dinero y pasa el pedido a IN_KITCHEN)
 PUT http://localhost:8080/payments/cash/1/confirm
 Accept: application/json
-Authorization: Bearer <TU_TOKEN_JWT_AQUI>
+Authorization: Bearer {{employeeToken}}

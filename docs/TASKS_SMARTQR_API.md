@@ -19,7 +19,7 @@
 
 ## 🔲 Fase 5: `feature/payments-billing`
 - [x] 5.1: Pasarela de pagos (Card Gateway y validación Cash).
-- [ ] 5.2: Endpoint de generación de tickets de pedido.
+- [x] 5.2: Endpoint de generación de tickets de pedido.
 
 ## 🔲 Fase 6: `feature/ai-integration`
 - [ ] 6.1: Configurar Spring AI y OpenAI API Keys.
