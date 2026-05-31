@@ -3,7 +3,6 @@
 ### =========================================
 
 ### 1. Ver la cola de cocina (Muestra pedidos PENDING e IN_KITCHEN)
-# IMPORTANTE: Reemplaza <TU_TOKEN_JWT_AQUI> por el token de un empleado
 GET http://localhost:8080/orders/kitchen/queue
 Accept: application/json
 Authorization: Bearer <TU_TOKEN_JWT_AQUI>
@@ -13,8 +12,7 @@ PATCH http://localhost:8080/orders/1/status?status=IN_KITCHEN
 Accept: application/json
 Authorization: Bearer <TU_TOKEN_JWT_AQUI>
 
-### 3. El cliente cambia de idea en mostrador: Modificar items
-# Solo funcionará si el estado sigue siendo PENDING
+### 3. El cliente cambia de idea en mostrador: Modificar items (Solo funcionará si el estado sigue siendo PENDING)
 PUT http://localhost:8080/orders/1/items
 Content-Type: application/json
 Authorization: Bearer <TU_TOKEN_JWT_AQUI>
@@ -37,8 +35,17 @@ PATCH http://localhost:8080/orders/1/status?status=READY
 Accept: application/json
 Authorization: Bearer <TU_TOKEN_JWT_AQUI>
 
-### 5. Anular un pedido desde caja
-# Lanzará error si ya está IN_KITCHEN o READY
+### 5. Anular un pedido desde caja (Lanzará error si ya está IN_KITCHEN o READY)
 PUT http://localhost:8080/orders/1/cancel
+Accept: application/json
+Authorization: Bearer <TU_TOKEN_JWT_AQUI>
+
+### =========================================
+###        PRUEBAS DE PAGO EN CASH
+### =========================================
+
+### 1. Confirmar pago en Efectivo (El cajero recibe el dinero y pasa el pedido a IN_KITCHEN)
+# IMPORTANTE: Reemplaza <TU_TOKEN_JWT_AQUI> por el token de un empleado
+PUT http://localhost:8080/payments/cash/1/confirm
 Accept: application/json
 Authorization: Bearer <TU_TOKEN_JWT_AQUI>

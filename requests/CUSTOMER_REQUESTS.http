@@ -1,5 +1,6 @@
 ### =========================================
-### FASE 4.1: PRUEBAS DE CLIENTE (QR Y COMANDAS)
+###         PRUEBAS DE CLIENTE
+###          (QR Y COMANDAS)
 ### =========================================
 
 ### 1. Escanear/Generar QR de la Mesa 5
@@ -28,7 +29,7 @@ Authorization: Bearer <TU_TOKEN_JWT_AQUI>
 }
 
 ### =========================================
-### FASE 4.2: PRUEBAS DE CLIENTE (CONSULTAS)
+###     PRUEBAS DE CLIENTE (CONSULTAS)
 ### =========================================
 
 ### 1. Ver el estado de un pedido concreto (Ej: Pedido ID 1)
@@ -41,3 +42,31 @@ Authorization: Bearer <TU_TOKEN_JWT_AQUI>
 GET http://localhost:8080/orders/table/5
 Accept: application/json
 Authorization: Bearer <TU_TOKEN_JWT_AQUI>
+
+### =========================================
+###         PRUEBAS DE PAGO
+### =========================================
+
+### 1. Pagar con Tarjeta de Crédito (Pasa el pedido a IN_KITCHEN directamente)
+# IMPORTANTE: Reemplaza <TU_TOKEN_JWT_AQUI>
+POST http://localhost:8080/payments/card
+Content-Type: application/json
+Authorization: Bearer <TU_TOKEN_JWT_AQUI>
+
+{
+  "orderId": 1,
+  "cardHolderName": "Francisco Manuel Candela",
+  "last4Digits": "4242",
+  "transactionId": "txn_stripe_987654321"
+}
+
+### 2. Solicitar pago en Efectivo en caja
+# (El cliente avisa que va a pagar con un billete de 20€. El pedido se queda PENDING)
+POST http://localhost:8080/payments/cash/request
+Content-Type: application/json
+Authorization: Bearer <TU_TOKEN_JWT_AQUI>
+
+{
+  "orderId": 1,
+  "cashReceived": 20.00
+}

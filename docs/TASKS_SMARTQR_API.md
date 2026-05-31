@@ -15,10 +15,10 @@
 
 ## 🔲 Fase 4: `feature/order-processing`
 - [x] 4.1: Creación de comandas, generación de QR y subtotales.
-- [ ] 4.2: Gestión de estados y colas de cocina.
+- [x] 4.2: Gestión de estados y colas de cocina.
 
 ## 🔲 Fase 5: `feature/payments-billing`
-- [ ] 5.1: Pasarela de pagos (Card Gateway y validación Cash).
+- [x] 5.1: Pasarela de pagos (Card Gateway y validación Cash).
 - [ ] 5.2: Endpoint de generación de tickets de pedido.
 
 ## 🔲 Fase 6: `feature/ai-integration`
