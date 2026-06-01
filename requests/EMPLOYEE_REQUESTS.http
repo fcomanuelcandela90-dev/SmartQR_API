@@ -1,69 +1,158 @@
 ### =========================================
-###  AUTENTICACIÓN EMPLEADO - EMPLOYEE LOGIN
+
+### AUTENTICACIÓN EMPLEADO - EMPLOYEE LOGIN
+
 ### =========================================
 
-
-### 0 Login empleado y guardar token JWT automáticamente
+### 0. Login empleado y guardar token JWT automáticamente
 
 POST http://localhost:8080/api/login
 Content-Type: application/json
 
 {
-"username": "<EMPLOYEE_EMAIL>",
-"password": "<EMPLOYEE_PASSWORD>"
+  "username": "[employee@smartqr.com](mailto:employee@smartqr.com)",
+  "password": "Employee123!"
 }
 
 > {%
-client.global.set("employeeToken", response.body.access_token);
-%}
+     client.global.set("employeeToken", response.body.access_token);
+    %}
 
 ### =========================================
-### FASE 4.2: PRUEBAS DE EMPLEADO (COCINA Y MOSTRADOR)
+
+### GENERACIÓN QR - EMPLOYEE
+
 ### =========================================
 
-### 1. Ver la cola de cocina (Muestra pedidos PENDING e IN_KITCHEN)
+### 1. Generar y guardar QR para la Mesa 6
+
+POST http://localhost:8080/qr/table/6
+Accept: image/png
+Authorization: Bearer {{employeeToken}}
+
+### Resultado esperado: HTTP 201 Created
+
+### Archivo generado: requests/table_qr/table-6-qr.png
+
+### =========================================
+
+### PRUEBAS DE PRODUCTOS
+
+### (EMPLOYEE)
+
+### =========================================
+
+### 2. [EMPLOYEE] Consultar productos fuera de stock
+
+GET http://localhost:8080/products/out-of-stock
+Accept: application/json
+Authorization: Bearer {{employeeToken}}
+
+### Resultado esperado: HTTP 200 OK
+
+### 3. [EMPLOYEE] No puede crear productos nuevos
+
+POST http://localhost:8080/products
+Content-Type: application/json
+Authorization: Bearer {{employeeToken}}
+
+{
+  "name": "Producto No Permitido Employee",
+  "description": "Este producto no debe guardarse",
+  "price": 1.50,
+  "category": "MONTADITO",
+  "imageUrl": "https://ejemplo.com/no-permitido.png"
+}
+
+### Resultado esperado: HTTP 403 Forbidden
+
+### =========================================
+
+### PRUEBAS DE EMPLEADO (COCINA Y MOSTRADOR)
+
+### =========================================
+
+### 4. Ver todos los pedidos activos de la Mesa 5
+
+GET http://localhost:8080/orders/table/5
+Accept: application/json
+Authorization: Bearer {{employeeToken}}
+
+### Resultado esperado: HTTP 200 OK
+
+### 5. Ver la cola de cocina
+
 GET http://localhost:8080/orders/kitchen/queue
 Accept: application/json
 Authorization: Bearer {{employeeToken}}
 
-### 2. El cocinero coge la comanda: Cambiar estado a IN_KITCHEN
-PATCH http://localhost:8080/orders/1/status?status=IN_KITCHEN
-Accept: application/json
-Authorization: Bearer {{employeeToken}}
+### Resultado esperado: HTTP 200 OK
 
-### 3. El cliente cambia de idea en mostrador: Modificar items (Solo funcionará si el estado sigue siendo PENDING)
-PUT http://localhost:8080/orders/1/items
+### 6. Modificar items del Pedido ID 4 mientras sigue PENDING
+
+PUT http://localhost:8080/orders/4/items
 Content-Type: application/json
 Authorization: Bearer {{employeeToken}}
 
 [
   {
-    "productId": 1,
-    "quantity": 3,
-    "notes": "Al final queremos 3 montaditos, muy hechos"
+    "productId": 16,
+    "quantity": 2,
+    "notes": "Se actualiza a dos montaditos"
   },
   {
-    "productId": 2,
+    "productId": 11,
     "quantity": 1,
     "notes": "Añadimos unas patatas bravas"
   }
 ]
 
-### 4. El cocinero termina: Marcar pedido como listo para servir (READY)
-PATCH http://localhost:8080/orders/1/status?status=READY
+### Resultado esperado: HTTP 200 OK
+
+### 7. El cocinero coge la comanda: cambiar Pedido ID 4 a IN_KITCHEN
+
+PATCH http://localhost:8080/orders/4/status?status=IN_KITCHEN
 Accept: application/json
 Authorization: Bearer {{employeeToken}}
 
-### 5. Anular un pedido desde caja (Lanzará error si ya está IN_KITCHEN o READY)
-PUT http://localhost:8080/orders/1/cancel
+### Resultado esperado: HTTP 200 OK
+
+### 8. El cocinero termina la comanda: cambiar Pedido ID 4 a READY
+
+PATCH http://localhost:8080/orders/4/status?status=READY
 Accept: application/json
 Authorization: Bearer {{employeeToken}}
+
+### Resultado esperado: HTTP 200 OK
+
+### 9. Intentar cancelar el Pedido ID 4 ya preparado
+
+PUT http://localhost:8080/orders/4/cancel
+Accept: application/json
+Authorization: Bearer {{employeeToken}}
+
+### Resultado esperado: solicitud rechazada por regla de negocio
+
+### Actualmente puede responder HTTP 403 hasta corregir excepciones en Fase 9
 
 ### =========================================
-###       PRUEBAS DE PAGO EN EFECTIVO
+
+### PRUEBAS DE PAGO EN EFECTIVO
+
 ### =========================================
 
-### 6. Confirmar pago en Efectivo (El cajero recibe el dinero y pasa el pedido a IN_KITCHEN)
-PUT http://localhost:8080/payments/cash/1/confirm
+### 10. Confirmar pago en Efectivo del Pedido ID 3
+
+PUT http://localhost:8080/payments/cash/3/confirm
 Accept: application/json
 Authorization: Bearer {{employeeToken}}
+
+### Resultado esperado: paymentStatus COMPLETED y paymentMethod CASH
+
+### 11. Descargar ticket del Pedido ID 3 pagado en efectivo
+
+GET http://localhost:8080/payments/ticket/3
+Accept: text/plain
+Authorization: Bearer {{employeeToken}}
+
+### Resultado esperado: HTTP 200 y ticket con Payment method CASH
