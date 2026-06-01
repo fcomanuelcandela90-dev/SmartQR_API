@@ -62,21 +62,21 @@
 
 ## 🔲 Security Hardening: `feature/security-rbac`
 
-* [ ] S.1: Auditar las rutas actuales de productos, pedidos, pagos y QR.
-* [ ] S.2: Implementar autorización real basada en roles (`CUSTOMER`, `EMPLOYEE`, `ADMIN`) en `SecurityConfig`.
-- [ ] S.3: Mantener público el acceso al menú digital y restringir la generación de QR de mesa a `EMPLOYEE` y `ADMIN`.
-- [ ] S.4: Guardar los códigos QR generados en `requests/table_qr/` identificados por número de mesa.
-- [ ] S.5: Añadir usuarios de prueba controlados para `EMPLOYEE` y `ADMIN`, sin permitir su registro público.
-- [ ] S.6: Actualizar los archivos HTTP de cliente, empleado y administrador para probar permisos por rol.
-- [ ] S.7: Validar accesos permitidos y denegados para cada perfil.
-- [ ] S.8: Documentar la matriz inicial de autorización por roles y el flujo de generación de QR.
+* [x] S.1: Auditar las rutas actuales de productos, pedidos, pagos y QR.
+* [x] S.2: Implementar autorización real basada en roles (`CUSTOMER`, `EMPLOYEE`, `ADMIN`) en `SecurityConfig`.
+- [x] S.3: Mantener público el acceso al menú digital y restringir la generación de QR de mesa a `EMPLOYEE` y `ADMIN`.
+- [x] S.4: Guardar los códigos QR generados en `requests/table_qr/` identificados por número de mesa.
+- [x] S.5: Añadir usuarios de prueba controlados para `EMPLOYEE` y `ADMIN`, sin permitir su registro público.
+- [x] S.6: Actualizar los archivos HTTP de cliente, empleado y administrador para probar permisos por rol.
+- [x] S.7: Validar accesos permitidos y denegados para cada perfil.
+- [x] S.8: Documentar la matriz inicial de autorización por roles y el flujo de generación de QR.
 
 
 ---
 
 ## 🔲 Fase 6: `feature/ai-integration`
 
-* [ ] 6.1: Auditar y configurar Spring AI y las variables de entorno necesarias para el proveedor de IA.
+* [x] 6.1: Configurar Spring AI con OpenAI mediante la variable de entorno segura `OPENAI_API_KEY`.
 * [ ] 6.2: Implementar análisis de sentimiento en feedback mediante `FeedBackController`, `FeedBackService` y DTOs.
 * [ ] 6.3: Implementar recomendaciones automatizadas de productos o combos mediante `AiController` y `AiService`.
 * [ ] 6.4: Añadir pruebas HTTP de endpoints de IA según rol autorizado.
