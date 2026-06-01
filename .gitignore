@@ -33,4 +33,4 @@ build/
 .vscode/
 
 # Generated table QR images during local tests
-requests/table_qr/*.png
+requests/table_qr/
