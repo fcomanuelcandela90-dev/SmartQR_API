@@ -147,7 +147,6 @@ PUT http://localhost:8080/payments/cash/3/confirm
 Accept: application/json
 Authorization: Bearer {{employeeToken}}
 
-### Resultado esperado: paymentStatus COMPLETED y paymentMethod CASH
 
 ### 11. Descargar ticket del Pedido ID 3 pagado en efectivo
 

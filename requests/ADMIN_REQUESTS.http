@@ -19,6 +19,7 @@ client.global.set("adminToken", response.body.access_token);
 ### =========================================
 ###     GENERACIÓN QR - ADMIN
 ### =========================================
+### Generar y guardar QR para la Mesa 5
 
 POST http://localhost:8080/qr/table/5
 Accept: image/png
@@ -55,9 +56,31 @@ Authorization: Bearer {{adminToken}}
 ###         DASHBOARD DE METRICAS - ADMIN
 ### =========================================
 
+### 4. [ADMIN] Consultar metricas generales del dashboard
 
 GET http://localhost:8080/dashboard/metrics
 Accept: application/json
 Authorization: Bearer {{adminToken}}
 
+
+### =========================================
+###         GRAFICOS PNG - ADMIN
+### =========================================
+
+### 5. [ADMIN] Generar grafico de ingresos por metodo de pago
+### El endpoint devuelve la imagen PNG y tambien la guarda localmente en:
+### requests/charts/income-by-payment-method.png
+
+GET http://localhost:8080/dashboard/charts/income-by-payment-method
+Accept: image/png
+Authorization: Bearer {{adminToken}}
+
+
+### 6. [ADMIN] Generar grafico de productos vendidos
+### El endpoint devuelve la imagen PNG y tambien la guarda localmente en:
+### requests/charts/product-sales.png
+
+GET http://localhost:8080/dashboard/charts/product-sales
+Accept: image/png
+Authorization: Bearer {{adminToken}}
 

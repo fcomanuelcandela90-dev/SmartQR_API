@@ -77,6 +77,10 @@ public class SecurityConfig {
 
                         .requestMatchers(HttpMethod.GET, "/dashboard/metrics").hasRole("ADMIN")
 
+                        .requestMatchers(HttpMethod.GET, "/dashboard/charts/income-by-payment-method").hasRole("ADMIN")
+
+                        .requestMatchers(HttpMethod.GET, "/dashboard/charts/product-sales").hasRole("ADMIN")
+
                         .anyRequest().denyAll()
                 )
                 .addFilter(new CustomAuthenticationFilter(authenticationManager(authenticationConfiguration)))
