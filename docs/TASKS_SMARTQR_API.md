@@ -86,7 +86,7 @@
 
 * [x] 6.1: Configurar Spring AI con OpenAI mediante la variable de entorno segura `OPENAI_API_KEY`.
 * [x] 6.2: Implementar análisis de sentimiento en feedback mediante `FeedBackController`, `FeedBackService` y DTOs.
-* [ ] 6.3: Implementar recomendaciones automatizadas de productos o combos mediante `AiController` y `AiService`.
+* [x] 6.3: Implementar recomendaciones automatizadas de productos o combos mediante `AiController` y `AiService`.
 * [ ] 6.4: Añadir pruebas HTTP de endpoints de IA según rol autorizado.
 
 ---
@@ -117,6 +117,10 @@
 * [ ] 9.4: Revisar comentarios, nombres de clases, imports y código no utilizado.
 * [ ] 9.5: Ejecutar pruebas positivas y negativas de todas las rutas mediante archivos `.http`.
 * [ ] 9.6: Verificar que la autorización por roles funciona también en endpoints de IA y dashboard.
+* [ ] 9.7: Separar la configuración de contraseñas en `security/EncoderConfig`, manteniendo BCrypt para no romper usuarios existentes.
+* [ ] 9.8: Refactorizar la capa de servicios siguiendo la estructura enseñada (`service` + `service/impl`) sin alterar la lógica ya validada.
+* [ ] 9.9: Externalizar la clave secreta JWT y eliminar secretos escritos directamente en código o propiedades.
+* [ ] 9.10: Crear un archivo HTTP end-to-end definitivo para validar el flujo completo de `CUSTOMER`, `EMPLOYEE` y `ADMIN`.
 
 ---
 
