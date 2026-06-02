@@ -77,7 +77,7 @@
 ## 🔲 Fase 6: `feature/ai-integration`
 
 * [x] 6.1: Configurar Spring AI con OpenAI mediante la variable de entorno segura `OPENAI_API_KEY`.
-* [ ] 6.2: Implementar análisis de sentimiento en feedback mediante `FeedBackController`, `FeedBackService` y DTOs.
+* [x] 6.2: Implementar análisis de sentimiento en feedback mediante `FeedBackController`, `FeedBackService` y DTOs.
 * [ ] 6.3: Implementar recomendaciones automatizadas de productos o combos mediante `AiController` y `AiService`.
 * [ ] 6.4: Añadir pruebas HTTP de endpoints de IA según rol autorizado.
 

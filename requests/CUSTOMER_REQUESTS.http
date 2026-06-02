@@ -256,12 +256,26 @@ GET http://localhost:8080/orders/table/5
 Accept: application/json
 Authorization: Bearer {{customerToken}}
 
-### Resultado esperado: HTTP 403 Forbidden
-
 ### 17. [CUSTOMER] No puede consultar la cola de cocina
 
 GET http://localhost:8080/orders/kitchen/queue
 Accept: application/json
 Authorization: Bearer {{customerToken}}
 
-### Resultado esperado: HTTP 403 Forbidden
+
+### =========================================
+###     AI FEEDBACK ANALYSIS
+### =========================================
+
+### 3. Enviar una opinión positiva y analizar sentimiento con OpenAI
+
+POST http://localhost:8080/feedback
+Content-Type: application/json
+Authorization: Bearer {{customerToken}}
+
+{
+  "orderId": 1,
+  "rating": 5,
+  "comment": "La comida estaba buenísima y el servicio fue muy rápido. Volvería sin duda."
+}
+

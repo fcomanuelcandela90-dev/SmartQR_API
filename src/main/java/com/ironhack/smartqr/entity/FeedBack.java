@@ -1,5 +1,6 @@
 package com.ironhack.smartqr.entity;
 
+import com.ironhack.smartqr.enums.SentimentType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -23,7 +24,8 @@ public class FeedBack {
 
     private Integer rating;
 
-    private String sentiment;
+    @Enumerated(EnumType.STRING)
+    private SentimentType sentiment;
 
     private LocalDateTime createdAt;
 
