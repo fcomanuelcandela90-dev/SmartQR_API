@@ -60,7 +60,7 @@
 
 ---
 
-## 🔲 Security Hardening: `feature/security-rbac`
+## ✅ Security Hardening: `feature/security-rbac`
 
 * [x] S.1: Auditar las rutas actuales de productos, pedidos, pagos y QR.
 * [x] S.2: Implementar autorización real basada en roles (`CUSTOMER`, `EMPLOYEE`, `ADMIN`) en `SecurityConfig`.
@@ -72,7 +72,7 @@
 - [x] S.8: Documentar la matriz inicial de autorización por roles y el flujo de generación de QR.
 
 ---
-## 🔲 Corrección detectada durante pruebas: `bugfix/customer-order-ownership`
+## ✅ Corrección detectada durante pruebas: `bugfix/customer-order-ownership`
 
 - [x] O.1: Impedir que un cliente consulte pedidos pertenecientes a otro usuario.
 - [x] O.2: Impedir que un cliente pague con tarjeta un pedido perteneciente a otro usuario.
@@ -82,19 +82,19 @@
 
 ---
 
-## 🔲 Fase 6: `feature/ai-integration`
+## ✅ Fase 6: `feature/ai-integration`
 
 * [x] 6.1: Configurar Spring AI con OpenAI mediante la variable de entorno segura `OPENAI_API_KEY`.
 * [x] 6.2: Implementar análisis de sentimiento en feedback mediante `FeedBackController`, `FeedBackService` y DTOs.
 * [x] 6.3: Implementar recomendaciones automatizadas de productos o combos mediante `AiController` y `AiService`.
-* [ ] 6.4: Añadir pruebas HTTP de endpoints de IA según rol autorizado.
+* [x] 6.4: Añadir pruebas HTTP de endpoints de IA según rol autorizado.
 
 ---
 
 ## 🔲 Fase 7: `feature/analytics-dashboard`
 
-* [ ] 7.1: Implementar consultas SQL/JPA para métricas de ingresos y ventas.
-* [ ] 7.2: Crear dashboard administrativo mediante `DashboardController`, `DashboardService` y DTO.
+* [x] 7.1: Consultas SQL nativas para métricas de ingresos.
+* [x] 7.2: Crear dashboard administrativo mediante `DashboardController`, `DashboardService` y DTO.
 * [ ] 7.3: Generar gráficos PNG en servidor mediante `ChartController`, `ChartService` y JFreeChart.
 * [ ] 7.4: Añadir pruebas HTTP del dashboard y de generación de gráficos para `ADMIN`.
 

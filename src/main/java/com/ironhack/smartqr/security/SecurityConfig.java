@@ -75,6 +75,8 @@ public class SecurityConfig {
 
                         .requestMatchers(HttpMethod.POST, "/ai/combo-recommendation").hasRole("CUSTOMER")
 
+                        .requestMatchers(HttpMethod.GET, "/dashboard/metrics").hasRole("ADMIN")
+
                         .anyRequest().denyAll()
                 )
                 .addFilter(new CustomAuthenticationFilter(authenticationManager(authenticationConfiguration)))
