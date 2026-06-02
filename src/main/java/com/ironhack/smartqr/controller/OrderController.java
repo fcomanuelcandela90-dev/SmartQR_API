@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,7 +23,10 @@ public class OrderController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public OrderResponse createOrder(Authentication authentication, @Valid @RequestBody CreateOrderRequest request) {
+    public OrderResponse createOrder(
+            Authentication authentication,
+            @Valid @RequestBody CreateOrderRequest request
+    ) {
         return orderService.createOrder(authentication.getName(), request);
     }
 
@@ -34,19 +38,32 @@ public class OrderController {
 
     @GetMapping("/{orderId}")
     @ResponseStatus(HttpStatus.OK)
-    public OrderResponse getOrderById(@PathVariable Long orderId) {
-        return orderService.getOrderById(orderId);
+    public OrderResponse getOrderById(
+            Authentication authentication,
+            @PathVariable Long orderId
+    ) {
+        return orderService.getOrderById(
+                authentication.getName(),
+                hasInternalStaffRole(authentication),
+                orderId
+        );
     }
 
     @PutMapping("/{orderId}/items")
     @ResponseStatus(HttpStatus.OK)
-    public OrderResponse updateOrderItems(@PathVariable Long orderId, @Valid @RequestBody List<OrderItemRequest> newItemsRequest) {
+    public OrderResponse updateOrderItems(
+            @PathVariable Long orderId,
+            @Valid @RequestBody List<OrderItemRequest> newItemsRequest
+    ) {
         return orderService.updateOrderItems(orderId, newItemsRequest);
     }
 
     @PatchMapping("/{orderId}/status")
     @ResponseStatus(HttpStatus.OK)
-    public OrderResponse updateOrderStatus(@PathVariable Long orderId, @RequestParam OrderStatus status) {
+    public OrderResponse updateOrderStatus(
+            @PathVariable Long orderId,
+            @RequestParam OrderStatus status
+    ) {
         return orderService.updateOrderStatus(orderId, status);
     }
 
@@ -60,5 +77,16 @@ public class OrderController {
     @ResponseStatus(HttpStatus.OK)
     public List<OrderResponse> getKitchenQueue() {
         return orderService.getKitchenQueue();
+    }
+
+    private boolean hasInternalStaffRole(Authentication authentication) {
+        for (GrantedAuthority authority : authentication.getAuthorities()) {
+            if ("ROLE_EMPLOYEE".equals(authority.getAuthority())
+                    || "ROLE_ADMIN".equals(authority.getAuthority())) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

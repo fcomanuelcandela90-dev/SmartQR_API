@@ -7,8 +7,8 @@ import com.ironhack.smartqr.entity.CardPayment;
 import com.ironhack.smartqr.entity.CashPayment;
 import com.ironhack.smartqr.entity.Order;
 import com.ironhack.smartqr.entity.OrderItem;
-import com.ironhack.smartqr.enums.OrderStatus;
 import com.ironhack.smartqr.entity.Payment;
+import com.ironhack.smartqr.enums.OrderStatus;
 import com.ironhack.smartqr.enums.PaymentMethod;
 import com.ironhack.smartqr.enums.PaymentStatus;
 import com.ironhack.smartqr.repository.CashPaymentRepository;
@@ -16,6 +16,7 @@ import com.ironhack.smartqr.repository.OrderRepository;
 import com.ironhack.smartqr.repository.PaymentRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -30,15 +31,23 @@ public class PaymentService {
     private final CashPaymentRepository cashPaymentRepository;
 
     @Transactional
-    public PaymentResponse processCardPayment(CardPaymentRequest request) {
+    public PaymentResponse processCardPayment(
+            String authenticatedEmail,
+            CardPaymentRequest request
+    ) {
         Order order = orderRepository.findById(request.orderId())
                 .orElseThrow(() -> new RuntimeException("Order ID not found: " + request.orderId()));
 
+        validateCustomerOwnsOrder(order, authenticatedEmail);
+
         if (order.getStatus() != OrderStatus.PENDING) {
-            throw new IllegalStateException("Cannot process payment: This order is already paid or unavailable.");
+            throw new IllegalStateException(
+                    "Cannot process payment: This order is already paid or unavailable."
+            );
         }
 
-        boolean gatewayApproval = true; // Simulador de pasarela
+        boolean gatewayApproval = true;
+
         if (!gatewayApproval) {
             throw new RuntimeException("Stripe Gateway rejected the credit card transaction.");
         }
@@ -46,7 +55,7 @@ public class PaymentService {
         CardPayment cardPayment = new CardPayment();
         cardPayment.setOrder(order);
         cardPayment.setAmount(order.getTotalPrice());
-        cardPayment.setPaymentStatus(PaymentStatus.COMPLETED); // Cambiado a COMPLETED
+        cardPayment.setPaymentStatus(PaymentStatus.COMPLETED);
         cardPayment.setPaymentMethod(PaymentMethod.CARD);
         cardPayment.setCreatedAt(LocalDateTime.now());
         cardPayment.setCardHolderName(request.cardHolderName());
@@ -55,7 +64,6 @@ public class PaymentService {
 
         CardPayment savedPayment = paymentRepository.save(cardPayment);
 
-        // Pasa directamente a cocina al cobrar con tarjeta
         order.setStatus(OrderStatus.IN_KITCHEN);
         orderRepository.save(order);
 
@@ -63,15 +71,23 @@ public class PaymentService {
     }
 
     @Transactional
-    public PaymentResponse requestCashPayment(CashPaymentRequest request) {
+    public PaymentResponse requestCashPayment(
+            String authenticatedEmail,
+            CashPaymentRequest request
+    ) {
         Order order = orderRepository.findById(request.orderId())
                 .orElseThrow(() -> new RuntimeException("Order not found with ID: " + request.orderId()));
 
+        validateCustomerOwnsOrder(order, authenticatedEmail);
+
         if (order.getStatus() != OrderStatus.PENDING) {
-            throw new IllegalStateException("Cannot request cash checkout: This order is already paid or unavailable.");
+            throw new IllegalStateException(
+                    "Cannot request cash checkout: This order is already paid or unavailable."
+            );
         }
 
-        if (request.cashReceived() == null || request.cashReceived().compareTo(order.getTotalPrice()) < 0) {
+        if (request.cashReceived() == null
+                || request.cashReceived().compareTo(order.getTotalPrice()) < 0) {
             throw new IllegalArgumentException(
                     "Cannot request cash checkout: cash received must be equal to or greater than the order total."
             );
@@ -84,13 +100,11 @@ public class PaymentService {
         cashPayment.setPaymentMethod(PaymentMethod.CASH);
         cashPayment.setCreatedAt(LocalDateTime.now());
         cashPayment.setCashReceived(request.cashReceived());
-
         cashPayment.setChangeAmount(request.cashReceived().subtract(order.getTotalPrice()));
         cashPayment.setConfirmed(false);
 
         CashPayment savedPayment = paymentRepository.save(cashPayment);
 
-        // Se mantiene en PENDING hasta que el cajero confirme el pago en metálico
         return mapToResponse(savedPayment);
     }
 
@@ -102,9 +116,10 @@ public class PaymentService {
         List<CashPayment> allCashPayments = cashPaymentRepository.findAll();
         CashPayment targetPayment = null;
 
-        for (CashPayment p : allCashPayments) {
-            if (p.getOrder().getId().equals(orderId) && !p.getConfirmed()) {
-                targetPayment = p;
+        for (CashPayment payment : allCashPayments) {
+            if (payment.getOrder().getId().equals(orderId)
+                    && !payment.getConfirmed()) {
+                targetPayment = payment;
                 break;
             }
         }
@@ -117,7 +132,6 @@ public class PaymentService {
         targetPayment.setPaymentStatus(PaymentStatus.COMPLETED);
         cashPaymentRepository.save(targetPayment);
 
-        // Una vez confirmado el pago en caja, pasa a cocina
         order.setStatus(OrderStatus.IN_KITCHEN);
         orderRepository.save(order);
 
@@ -125,18 +139,30 @@ public class PaymentService {
     }
 
     @Transactional
-    public String generatePrintableTicket(Long orderId) {
+    public String generatePrintableTicket(
+            String authenticatedEmail,
+            boolean internalStaffAccess,
+            Long orderId
+    ) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Order ID not found: " + orderId));
+
+        if (!internalStaffAccess) {
+            validateCustomerOwnsOrder(order, authenticatedEmail);
+        }
 
         Payment payment = order.getPayment();
 
         if (payment == null) {
-            throw new IllegalStateException("Cannot generate ticket: this order has no associated payment.");
+            throw new IllegalStateException(
+                    "Cannot generate ticket: this order has no associated payment."
+            );
         }
 
         if (payment.getPaymentStatus() != PaymentStatus.COMPLETED) {
-            throw new IllegalStateException("Cannot generate ticket: payment has not been completed.");
+            throw new IllegalStateException(
+                    "Cannot generate ticket: payment has not been completed."
+            );
         }
 
         StringBuilder ticket = new StringBuilder();
@@ -175,13 +201,21 @@ public class PaymentService {
         ticket.append("Payment status: ").append(payment.getPaymentStatus()).append("\n");
 
         if (payment instanceof CardPayment cardPayment) {
-            ticket.append("Card: **** ").append(cardPayment.getLast4Digits()).append("\n");
-            ticket.append("Transaction ID: ").append(cardPayment.getTransactionId()).append("\n");
+            ticket.append("Card: **** ")
+                    .append(cardPayment.getLast4Digits())
+                    .append("\n");
+            ticket.append("Transaction ID: ")
+                    .append(cardPayment.getTransactionId())
+                    .append("\n");
         }
 
         if (payment instanceof CashPayment cashPayment) {
-            ticket.append("Cash received: ").append(cashPayment.getCashReceived()).append(" EUR\n");
-            ticket.append("Change: ").append(cashPayment.getChangeAmount()).append(" EUR\n");
+            ticket.append("Cash received: ")
+                    .append(cashPayment.getCashReceived())
+                    .append(" EUR\n");
+            ticket.append("Change: ")
+                    .append(cashPayment.getChangeAmount())
+                    .append(" EUR\n");
         }
 
         ticket.append("========================================\n");
@@ -191,7 +225,7 @@ public class PaymentService {
         return ticket.toString();
     }
 
-    private PaymentResponse mapToResponse(com.ironhack.smartqr.entity.Payment payment) {
+    private PaymentResponse mapToResponse(Payment payment) {
         return new PaymentResponse(
                 payment.getId(),
                 payment.getAmount(),
@@ -200,4 +234,14 @@ public class PaymentService {
                 payment.getCreatedAt()
         );
     }
+
+    private void validateCustomerOwnsOrder(Order order, String authenticatedEmail) {
+        if (order.getUser() == null
+                || !order.getUser().getEmail().equalsIgnoreCase(authenticatedEmail)) {
+            throw new AccessDeniedException(
+                    "Cannot access order: this order does not belong to the authenticated customer."
+            );
+        }
+    }
+
 }

@@ -62,15 +62,23 @@
 
 ## 🔲 Security Hardening: `feature/security-rbac`
 
-* [ ] S.1: Auditar las rutas actuales de productos, pedidos, pagos y QR.
-* [ ] S.2: Implementar autorización real basada en roles (`CUSTOMER`, `EMPLOYEE`, `ADMIN`) en `SecurityConfig`.
-- [ ] S.3: Mantener público el acceso al menú digital y restringir la generación de QR de mesa a `EMPLOYEE` y `ADMIN`.
-- [ ] S.4: Guardar los códigos QR generados en `requests/table_qr/` identificados por número de mesa.
-- [ ] S.5: Añadir usuarios de prueba controlados para `EMPLOYEE` y `ADMIN`, sin permitir su registro público.
-- [ ] S.6: Actualizar los archivos HTTP de cliente, empleado y administrador para probar permisos por rol.
-- [ ] S.7: Validar accesos permitidos y denegados para cada perfil.
-- [ ] S.8: Documentar la matriz inicial de autorización por roles y el flujo de generación de QR.
+* [x] S.1: Auditar las rutas actuales de productos, pedidos, pagos y QR.
+* [x] S.2: Implementar autorización real basada en roles (`CUSTOMER`, `EMPLOYEE`, `ADMIN`) en `SecurityConfig`.
+- [x] S.3: Mantener público el acceso al menú digital y restringir la generación de QR de mesa a `EMPLOYEE` y `ADMIN`.
+- [x] S.4: Guardar los códigos QR generados en `requests/table_qr/` identificados por número de mesa.
+- [x] S.5: Añadir usuarios de prueba controlados para `EMPLOYEE` y `ADMIN`, sin permitir su registro público.
+- [x] S.6: Actualizar los archivos HTTP de cliente, empleado y administrador para probar permisos por rol.
+- [x] S.7: Validar accesos permitidos y denegados para cada perfil.
+- [x] S.8: Documentar la matriz inicial de autorización por roles y el flujo de generación de QR.
 
+---
+## 🔲 Corrección detectada durante pruebas: `bugfix/customer-order-ownership`
+
+- [x] O.1: Impedir que un cliente consulte pedidos pertenecientes a otro usuario.
+- [x] O.2: Impedir que un cliente pague con tarjeta un pedido perteneciente a otro usuario.
+- [x] O.3: Impedir que un cliente solicite pago cash para un pedido perteneciente a otro usuario.
+- [x] O.4: Impedir que un cliente consulte tickets pertenecientes a otro usuario.
+- [x] O.5: Validar mediante requests intentos de acceso cruzado entre dos clientes.
 
 ---
 
