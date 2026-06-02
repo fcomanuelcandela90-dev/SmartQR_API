@@ -4,7 +4,7 @@
 
 ### =========================================
 
-### 0. Registrar nuevo cliente
+### 0. [CUSTOMER] Registrar nuevo cliente
 
 POST http://localhost:8080/auth/register
 Content-Type: application/json
@@ -15,7 +15,7 @@ Content-Type: application/json
   "password": "Customer123!"
 }
 
-### 0.1 Login cliente y guardar token JWT automáticamente
+### 0.1 [CUSTOMER] Login cliente y guardar token JWT automáticamente
 
 POST http://localhost:8080/api/login
 Content-Type: application/json
@@ -37,7 +37,7 @@ Content-Type: application/json
 
 ### =========================================
 
-### 1. Ver la carta pública enlazada desde el QR físico de la Mesa 5
+### 1. [CUSTOMER] Ver la carta pública enlazada desde el QR físico de la Mesa 5
 
 GET http://localhost:8080/products/menu?table=5
 Accept: application/json
@@ -74,7 +74,7 @@ Authorization: Bearer {{customerToken}}
 
 ### =========================================
 
-### 4. Crear una nueva comanda para pagar con tarjeta
+### 4. [CUSTOMER] Crear una nueva comanda para pagar con tarjeta
 
 POST http://localhost:8080/orders
 Content-Type: application/json
@@ -86,17 +86,17 @@ Authorization: Bearer {{customerToken}}
     {
       "productId": 1,
       "quantity": 2,
-      "notes": "Sin cebolla por favor"
+      "notes": "Heladas"
     },
     {
       "productId": 3,
       "quantity": 1,
-      "notes": "Muy hecho"
+      "notes": "Con hielo extra"
     }
   ]
 }
 
-### 5. Ver el estado del Pedido ID 1 antes de pagar
+### 5. [CUSTOMER] Ver el estado del Pedido ID 1 antes de pagar
 
 GET http://localhost:8080/orders/1
 Accept: application/json
@@ -104,7 +104,7 @@ Authorization: Bearer {{customerToken}}
 
 ### Resultado esperado: PENDING
 
-### 6. Pagar el Pedido ID 1 con Tarjeta de Crédito
+### 6. [CUSTOMER] Pagar el Pedido ID 1 con Tarjeta de Crédito
 
 POST http://localhost:8080/payments/card
 Content-Type: application/json
@@ -119,7 +119,7 @@ Authorization: Bearer {{customerToken}}
 
 ### Resultado esperado: paymentStatus COMPLETED y paymentMethod CARD
 
-### 7. Ver el estado del Pedido ID 1 después de pagar
+### 7. [CUSTOMER] Ver el estado del Pedido ID 1 después de pagar
 
 GET http://localhost:8080/orders/1
 Accept: application/json
@@ -127,7 +127,7 @@ Authorization: Bearer {{customerToken}}
 
 ### Resultado esperado: IN_KITCHEN
 
-### 8. Descargar ticket del Pedido ID 1 pagado con tarjeta
+### 8. [CUSTOMER] Descargar ticket del Pedido ID 1 pagado con tarjeta
 
 GET http://localhost:8080/payments/ticket/1
 Accept: text/plain
@@ -141,7 +141,7 @@ Authorization: Bearer {{customerToken}}
 
 ### =========================================
 
-### 9. Crear un segundo pedido para probar efectivo insuficiente
+### 9. [CUSTOMER] Crear un segundo pedido para probar efectivo insuficiente
 
 POST http://localhost:8080/orders
 Content-Type: application/json
@@ -158,7 +158,7 @@ Authorization: Bearer {{customerToken}}
   ]
 }
 
-### 10. Intentar pagar el Pedido ID 2 con efectivo insuficiente
+### 10. [CUSTOMER] Intentar pagar el Pedido ID 2 con efectivo insuficiente
 
 POST http://localhost:8080/payments/cash/request
 Content-Type: application/json
@@ -171,9 +171,7 @@ Authorization: Bearer {{customerToken}}
 
 ### Resultado esperado: solicitud rechazada
 
-### Actualmente responde HTTP 403 hasta corregir excepciones en Fase 9
-
-### 11. Confirmar que no existe ticket para el Pedido ID 2 no pagado
+### 11. [CUSTOMER] Confirmar que no existe ticket para el Pedido ID 2 no pagado
 
 GET http://localhost:8080/payments/ticket/2
 Accept: text/plain
@@ -181,7 +179,6 @@ Authorization: Bearer {{customerToken}}
 
 ### Resultado esperado: solicitud rechazada
 
-### Actualmente responde HTTP 403 hasta corregir excepciones en Fase 9
 
 ### =========================================
 
@@ -189,7 +186,7 @@ Authorization: Bearer {{customerToken}}
 
 ### =========================================
 
-### 12. Crear un tercer pedido para confirmar el pago en efectivo por empleado
+### 12. [CUSTOMER] Crear un tercer pedido para confirmar el pago en efectivo por empleado
 
 POST http://localhost:8080/orders
 Content-Type: application/json
@@ -206,7 +203,7 @@ Authorization: Bearer {{customerToken}}
   ]
 }
 
-### 13. Solicitar pago en efectivo suficiente para el Pedido ID 3
+### 13. [CUSTOMER] Solicitar pago en efectivo suficiente para el Pedido ID 3
 
 POST http://localhost:8080/payments/cash/request
 Content-Type: application/json
@@ -233,7 +230,7 @@ Authorization: Bearer {{customerToken}}
 
 ### =========================================
 
-### 15. Crear un cuarto pedido pendiente para que lo gestione el empleado
+### 15. [CUSTOMER] Crear un cuarto pedido pendiente para que lo gestione el empleado
 
 POST http://localhost:8080/orders
 Content-Type: application/json
@@ -267,7 +264,7 @@ Authorization: Bearer {{customerToken}}
 ###     AI FEEDBACK ANALYSIS
 ### =========================================
 
-### 18. Enviar una opinión positiva y analizar sentimiento con OpenAI
+### 18. [CUSTOMER] Enviar una opinión positiva y analizar sentimiento con OpenAI
 
 POST http://localhost:8080/feedback
 Content-Type: application/json
@@ -283,7 +280,7 @@ Authorization: Bearer {{customerToken}}
 ###     AI COMBO RECOMMENDATION
 ### =========================================
 
-### 19. Solicitar recomendacion automatizada de combo con OpenAI
+### 19. [CUSTOMER] Solicitar recomendacion automatizada de combo con OpenAI
 
 POST http://localhost:8080/ai/combo-recommendation
 Content-Type: application/json
@@ -291,11 +288,9 @@ Authorization: Bearer {{customerToken}}
 
 {
   "preferences": "Quiero algo variado para compartir, con bebida y sin pescado.",
-  "maxBudget": 15.00,
-  "numberOfPeople": 2
+  "maxBudget": 35.00,
+  "numberOfPeople": 5
 }
 
-### Resultado esperado:
-### HTTP 200 OK
-### recommendation: texto en espanol utilizando solamente productos disponibles
+
 

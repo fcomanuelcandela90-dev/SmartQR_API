@@ -1,7 +1,5 @@
 ### =========================================
-
 ### AUTENTICACIÓN ADMINISTRADOR - ADMIN LOGIN
-
 ### =========================================
 
 ### 0. Login administrador y guardar token JWT automáticamente
@@ -10,88 +8,79 @@ POST http://localhost:8080/api/login
 Content-Type: application/json
 
 {
-  "username": "[admin@smartqr.com](mailto:admin@smartqr.com)",
-  "password": "Admin123!"
+"username": "admin@smartqr.com",
+"password": "Admin123!"
 }
 
 > {%
-     client.global.set("adminToken", response.body.access_token);
-     %}
+client.global.set("adminToken", response.body.access_token);
+%}
 
 ### =========================================
-
-### GENERACIÓN QR - ADMIN
-
+###     GENERACIÓN QR - ADMIN
 ### =========================================
-
-### 1. Generar y guardar QR para la Mesa 5
+### Generar y guardar QR para la Mesa 5
 
 POST http://localhost:8080/qr/table/5
 Accept: image/png
 Authorization: Bearer {{adminToken}}
 
-### Resultado esperado: HTTP 201 Created
-
-### Archivo generado: requests/table_qr/table-5-qr.png
-
+### =========================================
+###         PRUEBAS DE PRODUCTOS
 ### =========================================
 
-### PRUEBAS DE PRODUCTOS
-
-### (ADMIN)
-
-### =========================================
-
-### 2. [ADMIN] Ver todos los productos
-
+### 1. [ADMIN] Ver todos los productos
 GET http://localhost:8080/products
 Accept: application/json
 Authorization: Bearer {{adminToken}}
 
-### Resultado esperado: HTTP 200 OK
-
-### 3. [ADMIN] Crear un producto nuevo
-
+### 2. [ADMIN] Crear un producto nuevo
 POST http://localhost:8080/products
 Content-Type: application/json
 Authorization: Bearer {{adminToken}}
 
 {
-  "name": "Montadito Demo Admin",
-  "description": "Producto creado por administrador para validar permisos",
+  "name": "Montadito de Jamón",
+  "description": "Jamón ibérico con aceite",
   "price": 2.50,
   "category": "MONTADITO",
-  "imageUrl": "https://ejemplo.com/montadito-demo-admin.png"
+  "imageUrl": "https://ejemplo.com/jamon.png"
 }
 
-### Resultado esperado: HTTP 201 Created
-
-### 4. [ADMIN] Ver productos sin stock
-
+### 3. [ADMIN] Ver productos sin stock
 GET http://localhost:8080/products/out-of-stock
 Accept: application/json
 Authorization: Bearer {{adminToken}}
 
-### Resultado esperado: HTTP 200 OK
-
+### =========================================
+###         DASHBOARD DE METRICAS - ADMIN
 ### =========================================
 
-### OPERACIONES INTERNAS - ADMIN
+### 4. [ADMIN] Consultar metricas generales del dashboard
 
-### =========================================
-
-### 5. [ADMIN] Ver todos los pedidos activos de la Mesa 5
-
-GET http://localhost:8080/orders/table/5
+GET http://localhost:8080/dashboard/metrics
 Accept: application/json
 Authorization: Bearer {{adminToken}}
 
-### Resultado esperado: HTTP 200 OK
 
-### 6. [ADMIN] Ver la cola de cocina
+### =========================================
+###         GRAFICOS PNG - ADMIN
+### =========================================
 
-GET http://localhost:8080/orders/kitchen/queue
-Accept: application/json
+### 5. [ADMIN] Generar grafico de ingresos por metodo de pago
+### El endpoint devuelve la imagen PNG y tambien la guarda localmente en:
+### requests/charts/income-by-payment-method.png
+
+GET http://localhost:8080/dashboard/charts/income-by-payment-method
+Accept: image/png
 Authorization: Bearer {{adminToken}}
 
-### Resultado esperado: HTTP 200 OK
+
+### 6. [ADMIN] Generar grafico de productos vendidos
+### El endpoint devuelve la imagen PNG y tambien la guarda localmente en:
+### requests/charts/product-sales.png
+
+GET http://localhost:8080/dashboard/charts/product-sales
+Accept: image/png
+Authorization: Bearer {{adminToken}}
+
