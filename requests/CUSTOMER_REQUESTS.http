@@ -11,7 +11,7 @@ Content-Type: application/json
 
 {
   "name": "Francisco Manuel Candela",
-  "email": "[fran.customer@smartqr.com](mailto:fran.customer@smartqr.com)",
+  "email": "fran.customer@smartqr.com",
   "password": "Customer123!"
 }
 
@@ -21,7 +21,7 @@ POST http://localhost:8080/api/login
 Content-Type: application/json
 
 {
-  "username": "[fran.customer@smartqr.com](mailto:fran.customer@smartqr.com)",
+  "username": "fran.customer@smartqr.com",
   "password": "Customer123!"
 }
 
@@ -256,12 +256,46 @@ GET http://localhost:8080/orders/table/5
 Accept: application/json
 Authorization: Bearer {{customerToken}}
 
-### Resultado esperado: HTTP 403 Forbidden
-
 ### 17. [CUSTOMER] No puede consultar la cola de cocina
 
 GET http://localhost:8080/orders/kitchen/queue
 Accept: application/json
 Authorization: Bearer {{customerToken}}
 
-### Resultado esperado: HTTP 403 Forbidden
+
+### =========================================
+###     AI FEEDBACK ANALYSIS
+### =========================================
+
+### 18. Enviar una opinión positiva y analizar sentimiento con OpenAI
+
+POST http://localhost:8080/feedback
+Content-Type: application/json
+Authorization: Bearer {{customerToken}}
+
+{
+  "orderId": 1,
+  "rating": 5,
+  "comment": "La comida estaba buenísima y el servicio fue muy rápido. Volvería sin duda."
+}
+
+### =========================================
+###     AI COMBO RECOMMENDATION
+### =========================================
+
+### 19. Solicitar recomendacion automatizada de combo con OpenAI
+
+POST http://localhost:8080/ai/combo-recommendation
+Content-Type: application/json
+Authorization: Bearer {{customerToken}}
+
+{
+  "preferences": "Quiero algo variado para compartir, con bebida y sin pescado.",
+  "maxBudget": 15.00,
+  "numberOfPeople": 2
+}
+
+### Resultado esperado:
+### HTTP 200 OK
+### recommendation: texto en espanol utilizando solamente productos disponibles
+
