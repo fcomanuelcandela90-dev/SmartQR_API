@@ -2,6 +2,7 @@ package com.ironhack.smartqr.controller;
 
 import com.ironhack.smartqr.dto.feedback.FeedbackRequest;
 import com.ironhack.smartqr.dto.feedback.FeedbackResponse;
+import com.ironhack.smartqr.dto.feedback.FeedbackStatisticsResponse;
 import com.ironhack.smartqr.service.FeedBackService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,8 +21,13 @@ public class FeedBackController {
     @ResponseStatus(HttpStatus.CREATED)
     public FeedbackResponse createFeedback(
             Authentication authentication,
-            @Valid @RequestBody FeedbackRequest request
-    ) {
+            @Valid @RequestBody FeedbackRequest request) {
         return feedBackService.createFeedback(authentication.getName(), request);
+    }
+
+    @GetMapping("/statistics")
+    @ResponseStatus(HttpStatus.OK)
+    public FeedbackStatisticsResponse getFeedbackStatistics() {
+        return feedBackService.getFeedbackStatistics();
     }
 }

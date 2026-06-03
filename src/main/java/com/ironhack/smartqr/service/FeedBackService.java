@@ -2,6 +2,7 @@ package com.ironhack.smartqr.service;
 
 import com.ironhack.smartqr.dto.feedback.FeedbackRequest;
 import com.ironhack.smartqr.dto.feedback.FeedbackResponse;
+import com.ironhack.smartqr.dto.feedback.FeedbackStatisticsResponse;
 import com.ironhack.smartqr.entity.FeedBack;
 import com.ironhack.smartqr.entity.Order;
 import com.ironhack.smartqr.entity.User;
@@ -17,7 +18,10 @@ import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Locale;
 
 @Service
@@ -113,6 +117,51 @@ public class FeedBackService {
         }
     }
 
+    public FeedbackStatisticsResponse getFeedbackStatistics() {
+        List<FeedBack> feedbackList = feedBackRepository.findAll();
+
+        Long totalFeedback = (long) feedbackList.size();
+        Long positiveCount = 0L;
+        Long neutralCount = 0L;
+        Long negativeCount = 0L;
+
+        Integer totalRating = 0;
+        Integer feedbackWithRating = 0;
+
+        for (FeedBack feedback : feedbackList) {
+            if (feedback.getRating() != null) {
+                totalRating = totalRating + feedback.getRating();
+                feedbackWithRating++;
+            }
+
+            if (feedback.getSentiment() == SentimentType.POSITIVE) {
+                positiveCount++;
+            } else if (feedback.getSentiment() == SentimentType.NEUTRAL) {
+                neutralCount++;
+            } else if (feedback.getSentiment() == SentimentType.NEGATIVE) {
+                negativeCount++;
+            }
+        }
+
+        BigDecimal averageRating = BigDecimal.ZERO;
+
+        if (feedbackWithRating > 0) {
+            averageRating = BigDecimal.valueOf(totalRating)
+                    .divide(
+                            BigDecimal.valueOf(feedbackWithRating),
+                            2,
+                            RoundingMode.HALF_UP
+                    );
+        }
+
+        return new FeedbackStatisticsResponse(
+                totalFeedback,
+                averageRating,
+                positiveCount,
+                neutralCount,
+                negativeCount
+        );
+    }
 
     private FeedbackResponse mapToResponse(FeedBack feedBack) {
         return new FeedbackResponse(

@@ -137,7 +137,6 @@ Authorization: Bearer {{adminToken}}
 ### =========================================
 ###         MCP SERVER - ADMIN TOOLS
 ### =========================================
-### IMPORTANTE:
 ### - Estas peticiones validan MCP real sobre HTTP.
 ### - El servidor MCP expone solo herramientas internas de solo lectura.
 ### - El token de ADMIN se obtiene ejecutando primero el login del paso 0.
@@ -165,11 +164,6 @@ Authorization: Bearer {{adminToken}}
   }
 }
 
-### Resultado esperado:
-### HTTP 200 OK
-### serverInfo.name: smartqr-admin-tools
-### capabilities.tools presente
-
 ### 12. [ADMIN] Notificar que el cliente MCP ha finalizado la inicializacion
 
 POST http://localhost:8080/mcp
@@ -181,9 +175,6 @@ Authorization: Bearer {{adminToken}}
   "jsonrpc": "2.0",
   "method": "notifications/initialized"
 }
-
-### Resultado esperado:
-### HTTP 202 Accepted sin cuerpo
 
 ### 13. [ADMIN] Listar herramientas publicadas por el servidor MCP
 
@@ -198,13 +189,6 @@ Authorization: Bearer {{adminToken}}
   "method": "tools/list",
   "params": {}
 }
-
-### Resultado esperado:
-### HTTP 200 OK
-### tools debe contener:
-### - get_sales_metrics
-### - get_kitchen_queue
-### - get_available_menu
 
 ### 14. [ADMIN] Ejecutar herramienta MCP de metricas de ventas
 
@@ -223,10 +207,6 @@ Authorization: Bearer {{adminToken}}
   }
 }
 
-### Resultado esperado:
-### HTTP 200 OK
-### result.content incluye metricas del dashboard del restaurante
-
 ### 15. [ADMIN] Ejecutar herramienta MCP de cola de cocina
 
 POST http://localhost:8080/mcp
@@ -243,10 +223,6 @@ Authorization: Bearer {{adminToken}}
     "arguments": {}
   }
 }
-
-### Resultado esperado:
-### HTTP 200 OK
-### result.content incluye pedidos pendientes o en cocina
 
 ### 16. [ADMIN] Ejecutar herramienta MCP de menu disponible
 
@@ -265,8 +241,14 @@ Authorization: Bearer {{adminToken}}
   }
 }
 
-### Resultado esperado:
-### HTTP 200 OK
-### result.content incluye productos disponibles
+### =========================================
+###         FEEDBACK ANALYTICS - ADMIN
+### =========================================
+
+### 17. [ADMIN] Consultar estadisticas de feedback analizado por IA
+
+GET http://localhost:8080/feedback/statistics
+Accept: application/json
+Authorization: Bearer {{adminToken}}
 
 
