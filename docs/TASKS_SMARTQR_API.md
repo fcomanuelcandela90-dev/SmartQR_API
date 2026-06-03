@@ -100,17 +100,17 @@
 
 ---
 
-## 🚧 Fase 8: `feature/mcp-local-agent`
+## ✅ Fase 8: `feature/mcp-local-agent`
 
-* [ ] 8.1: Investigar y configurar la integración local con Ollama para el agente MCP.
-* [ ] 8.2: Crear el servicio del agente local y definir herramientas mediante `@Tool`.
-* [ ] 8.3: Implementar un caso de uso demostrable del agente sobre datos o acciones del sistema.
-* [ ] 8.4: Proteger los endpoints del agente según el rol autorizado.
-* [ ] 8.5: Añadir pruebas HTTP y documentar claramente qué funcionalidad usa OpenAI y cuál usa Ollama/MCP.
+* [x] 8.1: Investigar y configurar la integración local con Ollama para el agente MCP.
+* [x] 8.2: Crear el servicio del agente local y definir herramientas mediante `@Tool`.
+* [x] 8.3: Implementar un caso de uso demostrable del agente sobre datos o acciones del sistema.
+* [x] 8.4: Proteger los endpoints del agente según el rol autorizado.
+* [x] 8.5: Añadir pruebas HTTP y documentar claramente qué funcionalidad usa OpenAI y cuál usa Ollama/MCP.
 
 ---
 
-## 🔲 Fase 9: `bugfix/exception-validation`
+## 🚧 Fase 9: `feature/exception-validation`
 
 * [ ] 9.1: Crear `ErrorResponse`, excepciones personalizadas y `GlobalExceptionHandler`.
 * [ ] 9.2: Corregir los códigos HTTP de errores de negocio, evitando responder `403` para validaciones, recursos inexistentes o conflictos.
@@ -149,7 +149,7 @@
 * [ ] Gráfico circular de ingresos por método de pago generado como PNG.
 * [ ] Gráfico de productos vendidos generado con escala de unidades enteras.
 * [ ] PNG generados localmente ignorados por Git.
-* [ ] Agente MCP local funcional y documentado.
+* [x] Agente MCP local funcional y documentado.
 * [ ] Errores HTTP corregidos mediante manejo global de excepciones.
 * [ ] Flujo end-to-end final por perfiles ejecutado correctamente.
 
