@@ -66,21 +66,18 @@ public class SecurityConfig {
 
                         .requestMatchers(HttpMethod.POST, "/payments/card").hasRole("CUSTOMER")
                         .requestMatchers(HttpMethod.POST, "/payments/cash/request").hasRole("CUSTOMER")
-
                         .requestMatchers(HttpMethod.PUT, "/payments/cash/*/confirm").hasAnyRole("EMPLOYEE", "ADMIN")
-
                         .requestMatchers(HttpMethod.GET, "/payments/ticket/*").hasAnyRole("CUSTOMER", "EMPLOYEE", "ADMIN")
 
                         .requestMatchers(HttpMethod.POST, "/feedback").hasRole("CUSTOMER")
-
                         .requestMatchers(HttpMethod.POST, "/ai/combo-recommendation").hasRole("CUSTOMER")
 
                         .requestMatchers(HttpMethod.GET, "/dashboard/metrics").hasRole("ADMIN")
-
                         .requestMatchers(HttpMethod.GET, "/dashboard/charts/income-by-payment-method").hasRole("ADMIN")
-
                         .requestMatchers(HttpMethod.GET, "/dashboard/charts/product-sales").hasRole("ADMIN")
 
+                        .requestMatchers(HttpMethod.POST, "/agent/local/ask").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/mcp").hasRole("ADMIN")
                         .anyRequest().denyAll()
                 )
                 .addFilter(new CustomAuthenticationFilter(authenticationManager(authenticationConfiguration)))

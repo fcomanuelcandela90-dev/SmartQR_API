@@ -84,3 +84,189 @@ GET http://localhost:8080/dashboard/charts/product-sales
 Accept: image/png
 Authorization: Bearer {{adminToken}}
 
+### =========================================
+###         AGENTE LOCAL OLLAMA - ADMIN
+### =========================================
+### IMPORTANTE:
+### - Ollama debe estar ejecutandose en local.
+### - Modelo usado: qwen3:4b.
+### - Para obtener metricas con ventas, ejecutar antes un pago completado
+###   desde CUSTOMER_REQUESTS.http.
+### - Este agente es de solo lectura: consulta datos, no modifica nada.
+
+### 7. [ADMIN] Consultar metricas mediante el agente local Ollama
+
+POST http://localhost:8080/agent/local/ask
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+{
+  "question": "Resume las ventas actuales del restaurante e indica el producto mas vendido."
+}
+
+### 8. [ADMIN] Consultar la cola de cocina mediante el agente local Ollama
+
+POST http://localhost:8080/agent/local/ask
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+{
+  "question": "Cuantos pedidos hay actualmente pendientes o en cocina? Resume la carga de trabajo."
+}
+
+### 9. [ADMIN] Consultar productos disponibles mediante el agente local Ollama
+
+POST http://localhost:8080/agent/local/ask
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+{
+  "question": "Que productos hay disponibles actualmente en el menu? Dame un resumen breve."
+}
+
+### 10. [ADMIN] Verificar que el agente local no modifica datos
+
+POST http://localhost:8080/agent/local/ask
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+{
+  "question": "Cancela todos los pedidos pendientes y elimina los productos no disponibles."
+}
+
+### =========================================
+###         MCP SERVER - ADMIN TOOLS
+### =========================================
+### IMPORTANTE:
+### - Estas peticiones validan MCP real sobre HTTP.
+### - El servidor MCP expone solo herramientas internas de solo lectura.
+### - El token de ADMIN se obtiene ejecutando primero el login del paso 0.
+### - Para que las metricas contengan ventas, ejecutar antes un pago completado
+###   desde CUSTOMER_REQUESTS.http.
+
+### 11. [ADMIN] Inicializar cliente MCP contra el servidor SmartQR
+
+POST http://localhost:8080/mcp
+Content-Type: application/json
+Accept: application/json, text/event-stream
+Authorization: Bearer {{adminToken}}
+
+{
+  "jsonrpc": "2.0",
+  "id": 101,
+  "method": "initialize",
+  "params": {
+    "protocolVersion": "2025-03-26",
+    "capabilities": {},
+    "clientInfo": {
+      "name": "smartqr-http-test-client",
+      "version": "1.0.0"
+    }
+  }
+}
+
+### Resultado esperado:
+### HTTP 200 OK
+### serverInfo.name: smartqr-admin-tools
+### capabilities.tools presente
+
+### 12. [ADMIN] Notificar que el cliente MCP ha finalizado la inicializacion
+
+POST http://localhost:8080/mcp
+Content-Type: application/json
+Accept: application/json, text/event-stream
+Authorization: Bearer {{adminToken}}
+
+{
+  "jsonrpc": "2.0",
+  "method": "notifications/initialized"
+}
+
+### Resultado esperado:
+### HTTP 202 Accepted sin cuerpo
+
+### 13. [ADMIN] Listar herramientas publicadas por el servidor MCP
+
+POST http://localhost:8080/mcp
+Content-Type: application/json
+Accept: application/json, text/event-stream
+Authorization: Bearer {{adminToken}}
+
+{
+  "jsonrpc": "2.0",
+  "id": 102,
+  "method": "tools/list",
+  "params": {}
+}
+
+### Resultado esperado:
+### HTTP 200 OK
+### tools debe contener:
+### - get_sales_metrics
+### - get_kitchen_queue
+### - get_available_menu
+
+### 14. [ADMIN] Ejecutar herramienta MCP de metricas de ventas
+
+POST http://localhost:8080/mcp
+Content-Type: application/json
+Accept: application/json, text/event-stream
+Authorization: Bearer {{adminToken}}
+
+{
+  "jsonrpc": "2.0",
+  "id": 103,
+  "method": "tools/call",
+  "params": {
+    "name": "get_sales_metrics",
+    "arguments": {}
+  }
+}
+
+### Resultado esperado:
+### HTTP 200 OK
+### result.content incluye metricas del dashboard del restaurante
+
+### 15. [ADMIN] Ejecutar herramienta MCP de cola de cocina
+
+POST http://localhost:8080/mcp
+Content-Type: application/json
+Accept: application/json, text/event-stream
+Authorization: Bearer {{adminToken}}
+
+{
+  "jsonrpc": "2.0",
+  "id": 104,
+  "method": "tools/call",
+  "params": {
+    "name": "get_kitchen_queue",
+    "arguments": {}
+  }
+}
+
+### Resultado esperado:
+### HTTP 200 OK
+### result.content incluye pedidos pendientes o en cocina
+
+### 16. [ADMIN] Ejecutar herramienta MCP de menu disponible
+
+POST http://localhost:8080/mcp
+Content-Type: application/json
+Accept: application/json, text/event-stream
+Authorization: Bearer {{adminToken}}
+
+{
+  "jsonrpc": "2.0",
+  "id": 105,
+  "method": "tools/call",
+  "params": {
+    "name": "get_available_menu",
+    "arguments": {}
+  }
+}
+
+### Resultado esperado:
+### HTTP 200 OK
+### result.content incluye productos disponibles
+
+
