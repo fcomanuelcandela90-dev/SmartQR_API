@@ -115,8 +115,8 @@
 * [x] 9.1: Crear `ErrorResponse`, excepciones personalizadas y `GlobalExceptionHandler`.
 * [x] 9.2: Corregir los códigos HTTP de errores de negocio, evitando responder `403` para validaciones, recursos inexistentes o conflictos.
 * [x] 9.3: Auditar DTOs y aplicar validaciones con `@Valid`, `@NotNull`, `@NotBlank`, `@Min`, `@Max` y restricciones necesarias.
-* [ ] 9.4: Validar mediante requests los errores de registro, pedidos, pagos, feedback, IA y dashboard.
-* [ ] 9.5: Comprobar que `403 Forbidden` queda reservado para accesos realmente no autorizados.
+* [X] 9.4: Validar mediante requests los errores de registro, pedidos, pagos, feedback, IA y dashboard.
+* [X] 9.5: Comprobar que `403 Forbidden` queda reservado para accesos realmente no autorizados.
 
 ---
 

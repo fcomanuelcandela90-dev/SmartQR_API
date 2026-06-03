@@ -1,0 +1,397 @@
+### =========================================
+### SMARTQR - EXCEPTION AND AUTHORIZATION VALIDATION
+### FASE 9 - Evidencias de errores y permisos
+### =========================================
+### Este archivo se mantiene en el repositorio como evidencia de pruebas.
+### Ejecutar las peticiones en orden.
+### Si el registro de un usuario devuelve 409 porque ya existe,
+### continuar con su login correspondiente.
+### =========================================
+
+@baseUrl = http://localhost:8080
+@ownerEmail = exception.owner@smartqr.com
+@otherEmail = exception.other@smartqr.com
+@testPassword = Validation123!
+
+### =========================================
+### A. DATOS BASE Y CUSTOMER PROPIETARIO
+### =========================================
+
+### 0. Obtener menu publico y guardar un producto real
+GET {{baseUrl}}/products/menu
+Accept: application/json
+
+> {%
+client.global.set("validationProductId", response.body[0].id);
+%}
+
+### Resultado esperado:
+### HTTP 200 OK
+
+
+### 1. Registrar customer propietario de pedidos
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "name": "Exception Owner Customer",
+  "email": "{{ownerEmail}}",
+  "password": "{{testPassword}}"
+}
+
+### Resultado esperado en base limpia:
+### HTTP 201 Created
+
+
+### 2. [409] Registrar otra vez el mismo email
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "name": "Exception Owner Customer Duplicate",
+  "email": "{{ownerEmail}}",
+  "password": "{{testPassword}}"
+}
+
+### Resultado esperado:
+### HTTP 409 Conflict
+### message: Cannot register user: this email is already in use.
+
+
+### 3. Login customer propietario y guardar token
+POST {{baseUrl}}/api/login
+Content-Type: application/json
+
+{
+  "username": "{{ownerEmail}}",
+  "password": "{{testPassword}}"
+}
+
+> {%
+client.global.set("ownerValidationToken", response.body.access_token);
+%}
+
+### Resultado esperado:
+### HTTP 200 OK
+
+
+### =========================================
+### B. VALIDACIONES DE DTO Y ERRORES DE PEDIDOS/PAGOS
+### =========================================
+
+### 4. [400] Crear pedido con cantidad igual a cero
+POST {{baseUrl}}/orders
+Content-Type: application/json
+Authorization: Bearer {{ownerValidationToken}}
+
+{
+  "tableNumber": 90,
+  "items": [
+    {
+      "productId": {{validationProductId}},
+      "quantity": 0,
+      "notes": "Debe fallar por cantidad cero"
+    }
+  ]
+}
+
+### Resultado esperado:
+### HTTP 400 Bad Request
+### message contiene: Quantity must be greater than zero
+
+
+### 5. Crear pedido valido para probar cash insuficiente
+POST {{baseUrl}}/orders
+Content-Type: application/json
+Authorization: Bearer {{ownerValidationToken}}
+
+{
+  "tableNumber": 91,
+  "items": [
+    {
+      "productId": {{validationProductId}},
+      "quantity": 2,
+      "notes": "Pedido para cash insuficiente"
+    }
+  ]
+}
+
+> {%
+client.global.set("cashValidationOrderId", response.body.orderId);
+%}
+
+### Resultado esperado:
+### HTTP 201 Created
+
+
+### 6. [400] Solicitar pago cash insuficiente
+POST {{baseUrl}}/payments/cash/request
+Content-Type: application/json
+Authorization: Bearer {{ownerValidationToken}}
+
+{
+  "orderId": {{cashValidationOrderId}},
+  "cashReceived": 0.01
+}
+
+### Resultado esperado:
+### HTTP 400 Bad Request
+### error: Bad Request
+### message contiene: cash received must be equal to or greater than the order total.
+
+
+### 7. [404] Consultar pedido inexistente
+GET {{baseUrl}}/orders/999999999
+Accept: application/json
+Authorization: Bearer {{ownerValidationToken}}
+
+### Resultado esperado:
+### HTTP 404 Not Found
+### message: Order not found with ID: 999999999
+
+
+### 8. Crear pedido valido para probar pago repetido
+POST {{baseUrl}}/orders
+Content-Type: application/json
+Authorization: Bearer {{ownerValidationToken}}
+
+{
+  "tableNumber": 92,
+  "items": [
+    {
+      "productId": {{validationProductId}},
+      "quantity": 1,
+      "notes": "Pedido para pago repetido"
+    }
+  ]
+}
+
+> {%
+client.global.set("paidValidationOrderId", response.body.orderId);
+%}
+
+### Resultado esperado:
+### HTTP 201 Created
+
+
+### 9. Pagar correctamente el pedido con tarjeta
+POST {{baseUrl}}/payments/card
+Content-Type: application/json
+Authorization: Bearer {{ownerValidationToken}}
+
+{
+  "orderId": {{paidValidationOrderId}},
+  "cardHolderName": "Exception Owner Customer",
+  "last4Digits": "4242",
+  "transactionId": "validation-first-payment"
+}
+
+### Resultado esperado:
+### HTTP 201 Created
+### paymentStatus: COMPLETED
+### paymentMethod: CARD
+
+
+### 10. [409] Intentar pagar de nuevo el mismo pedido
+POST {{baseUrl}}/payments/card
+Content-Type: application/json
+Authorization: Bearer {{ownerValidationToken}}
+
+{
+  "orderId": {{paidValidationOrderId}},
+  "cardHolderName": "Exception Owner Customer",
+  "last4Digits": "4242",
+  "transactionId": "validation-duplicate-payment"
+}
+
+### Resultado esperado:
+### HTTP 409 Conflict
+### message contiene: this order is already paid or unavailable.
+
+
+### 11. [401] Acceder con un JWT invalido
+GET {{baseUrl}}/orders/{{paidValidationOrderId}}
+Accept: application/json
+Authorization: Bearer invalid.jwt.token.for.validation
+
+### Resultado esperado:
+### HTTP 401 Unauthorized
+### message: Authentication token is invalid or expired.
+
+
+### =========================================
+### C. FEEDBACK E IA - VALIDACIONES SIN LLAMAR AL MODELO
+### =========================================
+
+### 12. [400] Enviar feedback con rating fuera de rango
+### La validacion ocurre antes de invocar OpenAI.
+POST {{baseUrl}}/feedback
+Content-Type: application/json
+Authorization: Bearer {{ownerValidationToken}}
+
+{
+  "orderId": {{paidValidationOrderId}},
+  "rating": 8,
+  "comment": "Este comentario no debe llegar al analisis IA porque el rating es invalido."
+}
+
+### Resultado esperado:
+### HTTP 400 Bad Request
+### message contiene: Rating must be at most 5
+
+
+### 13. [400] Solicitar recomendacion IA con presupuesto invalido
+### La validacion ocurre antes de invocar OpenAI.
+POST {{baseUrl}}/ai/combo-recommendation
+Content-Type: application/json
+Authorization: Bearer {{ownerValidationToken}}
+
+{
+  "preferences": "Quiero compartir una bebida.",
+  "maxBudget": 0.50,
+  "numberOfPeople": 2
+}
+
+### Resultado esperado:
+### HTTP 400 Bad Request
+### message contiene: Maximum budget must be at least 1.00 EUR
+
+
+### =========================================
+### D. FORBIDDEN REAL: OTRO CUSTOMER
+### =========================================
+
+### 14. Registrar segundo customer
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "name": "Exception Other Customer",
+  "email": "{{otherEmail}}",
+  "password": "{{testPassword}}"
+}
+
+### Resultado esperado en base limpia:
+### HTTP 201 Created
+
+
+### 15. Login segundo customer y guardar token
+POST {{baseUrl}}/api/login
+Content-Type: application/json
+
+{
+  "username": "{{otherEmail}}",
+  "password": "{{testPassword}}"
+}
+
+> {%
+client.global.set("otherValidationToken", response.body.access_token);
+%}
+
+### Resultado esperado:
+### HTTP 200 OK
+
+
+### 16. [403] Segundo customer intenta consultar pedido del propietario
+GET {{baseUrl}}/orders/{{paidValidationOrderId}}
+Accept: application/json
+Authorization: Bearer {{otherValidationToken}}
+
+### Resultado esperado:
+### HTTP 403 Forbidden
+### message contiene: this order does not belong to the authenticated customer.
+
+
+### 17. [403] Segundo customer intenta enviar feedback sobre pedido ajeno
+### El servicio rechaza ownership antes de invocar OpenAI.
+POST {{baseUrl}}/feedback
+Content-Type: application/json
+Authorization: Bearer {{otherValidationToken}}
+
+{
+  "orderId": {{paidValidationOrderId}},
+  "rating": 4,
+  "comment": "No deberia poder valorar el pedido de otro cliente."
+}
+
+### Resultado esperado:
+### HTTP 403 Forbidden
+### message contiene: this order does not belong to the authenticated customer.
+
+
+### 18. [403] Customer intenta consultar dashboard de ADMIN
+GET {{baseUrl}}/dashboard/metrics
+Accept: application/json
+Authorization: Bearer {{ownerValidationToken}}
+
+### Resultado esperado:
+### HTTP 403 Forbidden
+### Esta denegacion procede de RBAC porque CUSTOMER no tiene rol ADMIN.
+
+
+### 19. [403] Customer intenta utilizar agente local de ADMIN
+POST {{baseUrl}}/agent/local/ask
+Content-Type: application/json
+Authorization: Bearer {{ownerValidationToken}}
+
+{
+  "question": "Resume las ventas actuales."
+}
+
+### Resultado esperado:
+### HTTP 403 Forbidden
+### Ollama no debe ser invocado porque el rol no esta autorizado.
+
+
+### =========================================
+### E. ADMIN - VALIDACION DE RECURSO Y DTO LOCAL
+### =========================================
+
+### 20. Login administrador y guardar token
+POST {{baseUrl}}/api/login
+Content-Type: application/json
+
+{
+  "username": "admin@smartqr.com",
+  "password": "Admin123!"
+}
+
+> {%
+client.global.set("adminValidationToken", response.body.access_token);
+%}
+
+### Resultado esperado:
+### HTTP 200 OK
+
+
+### 21. [404] Admin intenta actualizar producto inexistente
+PUT {{baseUrl}}/products/999999999
+Content-Type: application/json
+Authorization: Bearer {{adminValidationToken}}
+
+{
+  "name": "Producto de validacion",
+  "description": "Este producto no debe guardarse",
+  "price": 2.50,
+  "category": "MONTADITO",
+  "imageUrl": "https://example.com/validation.png"
+}
+
+### Resultado esperado:
+### HTTP 404 Not Found
+### message: Product not found with ID: 999999999
+
+
+### 22. [400] Admin invoca agente local con pregunta vacia
+### La validacion ocurre antes de invocar Ollama.
+POST {{baseUrl}}/agent/local/ask
+Content-Type: application/json
+Authorization: Bearer {{adminValidationToken}}
+
+{
+  "question": ""
+}
+
+### Resultado esperado:
+### HTTP 400 Bad Request
+### message contiene: Question is required
