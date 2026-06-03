@@ -4,6 +4,8 @@ import com.ironhack.smartqr.dto.ai.ComboRecommendationRequest;
 import com.ironhack.smartqr.dto.ai.ComboRecommendationResponse;
 import com.ironhack.smartqr.entity.Product;
 import com.ironhack.smartqr.repository.ProductRepository;
+import com.ironhack.smartqr.exception.BusinessRuleException;
+import com.ironhack.smartqr.exception.ExternalServiceException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.stereotype.Service;
@@ -21,7 +23,7 @@ public class AiService {
         List<Product> availableProducts = productRepository.findByAvailableTrue();
 
         if (availableProducts.isEmpty()) {
-            throw new IllegalStateException(
+            throw new BusinessRuleException(
                     "Cannot generate combo recommendation: there are no available products in the menu."
             );
         }
@@ -42,8 +44,10 @@ public class AiService {
                 availableMenu
         );
 
-        String recommendation = chatClient.prompt()
-                .system("""
+        String recommendation;
+        try{
+            recommendation = chatClient.prompt()
+                    .system("""
                     You are the SmartQR restaurant assistant.
                     Recommend a combo for the customer using only products included in the available menu.
 
@@ -62,8 +66,15 @@ public class AiService {
                 .call()
                 .content();
 
+        } catch (Exception exception) {
+            throw new ExternalServiceException(
+                    "OpenAI combo recommendation service is currently unavailable.",
+                    exception
+            );
+        }
+
         if (recommendation == null || recommendation.isBlank()) {
-            throw new IllegalStateException(
+            throw new ExternalServiceException(
                     "OpenAI did not return a combo recommendation."
             );
         }

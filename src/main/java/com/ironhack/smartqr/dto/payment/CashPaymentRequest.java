@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 
 public record CashPaymentRequest(
         @NotNull(message = "Order ID is obligatory")
+        @Positive(message = "Order ID must be greater than zero")
         Long orderId,
 
         @NotNull(message = "Cash Received is obligatory")

@@ -112,9 +112,9 @@
 
 ## 🚧 Fase 9: `feature/exception-validation`
 
-* [ ] 9.1: Crear `ErrorResponse`, excepciones personalizadas y `GlobalExceptionHandler`.
-* [ ] 9.2: Corregir los códigos HTTP de errores de negocio, evitando responder `403` para validaciones, recursos inexistentes o conflictos.
-* [ ] 9.3: Auditar DTOs y aplicar validaciones con `@Valid`, `@NotNull`, `@NotBlank`, `@Min`, `@Max` y restricciones necesarias.
+* [x] 9.1: Crear `ErrorResponse`, excepciones personalizadas y `GlobalExceptionHandler`.
+* [x] 9.2: Corregir los códigos HTTP de errores de negocio, evitando responder `403` para validaciones, recursos inexistentes o conflictos.
+* [x] 9.3: Auditar DTOs y aplicar validaciones con `@Valid`, `@NotNull`, `@NotBlank`, `@Min`, `@Max` y restricciones necesarias.
 * [ ] 9.4: Validar mediante requests los errores de registro, pedidos, pagos, feedback, IA y dashboard.
 * [ ] 9.5: Comprobar que `403 Forbidden` queda reservado para accesos realmente no autorizados.
 
@@ -145,10 +145,10 @@
 
 # 🧪 Evidencias pendientes de validación
 
-* [ ] Dashboard administrativo accesible únicamente para `ADMIN`.
-* [ ] Gráfico circular de ingresos por método de pago generado como PNG.
-* [ ] Gráfico de productos vendidos generado con escala de unidades enteras.
-* [ ] PNG generados localmente ignorados por Git.
+* [x] Dashboard administrativo accesible únicamente para `ADMIN`.
+* [x] Gráfico circular de ingresos por método de pago generado como PNG.
+* [x] Gráfico de productos vendidos generado con escala de unidades enteras.
+* [x] PNG generados localmente ignorados por Git.
 * [x] Agente MCP local funcional y documentado.
 * [ ] Errores HTTP corregidos mediante manejo global de excepciones.
 * [ ] Flujo end-to-end final por perfiles ejecutado correctamente.
@@ -157,8 +157,8 @@
 
 # ⚠️ Deudas técnicas controladas
 
-* [ ] Corregir en Fase 9 los errores de negocio que actualmente terminan respondiendo con HTTP `403`.
+* [x] Corregir en Fase 9 los errores de negocio que actualmente terminan respondiendo con HTTP `403`.
 * [ ] Aplicar validaciones completas de entrada y respuestas de error consistentes.
 * [ ] Adaptar la estructura de seguridad y servicios al patrón enseñado en el bootcamp durante la Fase 10.
 * [ ] Mantener el README y los diagramas sincronizados con las rutas y clases realmente implementadas.
-* [ ] No documentar MCP ni release final como terminados hasta validarlos mediante pruebas reales.
+* [x] No documentar MCP ni release final como terminados hasta validarlos mediante pruebas reales.

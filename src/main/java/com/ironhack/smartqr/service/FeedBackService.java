@@ -6,12 +6,15 @@ import com.ironhack.smartqr.entity.FeedBack;
 import com.ironhack.smartqr.entity.Order;
 import com.ironhack.smartqr.entity.User;
 import com.ironhack.smartqr.enums.SentimentType;
+import com.ironhack.smartqr.exception.ExternalServiceException;
+import com.ironhack.smartqr.exception.ResourceNotFoundException;
 import com.ironhack.smartqr.repository.FeedBackRepository;
 import com.ironhack.smartqr.repository.OrderRepository;
 import com.ironhack.smartqr.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -29,13 +32,17 @@ public class FeedBackService {
     @Transactional
     public FeedbackResponse createFeedback(String customerEmail, FeedbackRequest request) {
         User customer = userRepository.findByEmail(customerEmail)
-                .orElseThrow(() -> new RuntimeException("Customer not found with email: " + customerEmail));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Customer not found with email: " + customerEmail
+                ));
 
         Order order = orderRepository.findById(request.orderId())
-                .orElseThrow(() -> new RuntimeException("Order not found with ID: " + request.orderId()));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Order not found with ID: " + request.orderId()
+                ));
 
         if (order.getUser() == null || !order.getUser().getId().equals(customer.getId())) {
-            throw new IllegalStateException(
+            throw new AccessDeniedException(
                     "Cannot submit feedback: this order does not belong to the authenticated customer."
             );
         }
@@ -55,29 +62,41 @@ public class FeedBackService {
         return mapToResponse(savedFeedBack);
     }
 
+
     private SentimentType analyzeSentiment(String comment, Integer rating) {
         String customerFeedback = """
-                Rating: %d out of 5
-                Customer comment: %s
-                """.formatted(rating, comment);
+                                    Rating: %d out of 5
+                                    Customer comment: %s
+                                  """.formatted(rating, comment);
 
-        String aiResponse = chatClient.prompt()
-                .system("""
-                        You are a sentiment classifier for restaurant customer feedback.
-                        Classify the customer's feedback using exactly one of these values:
-                        POSITIVE
-                        NEUTRAL
-                        NEGATIVE
-                        
-                        Reply only with one uppercase value.
-                        Do not include punctuation, explanations or extra text.
-                        """)
-                .user(customerFeedback)
-                .call()
-                .content();
+        String aiResponse;
+
+        try {
+            aiResponse = chatClient.prompt()
+                    .system("""
+                    You are a sentiment classifier for restaurant customer feedback.
+                    Classify the customer's feedback using exactly one of these values:
+                    POSITIVE
+                    NEUTRAL
+                    NEGATIVE
+
+                    Reply only with one uppercase value.
+                    Do not include punctuation, explanations or extra text.
+                    """)
+                    .user(customerFeedback)
+                    .call()
+                    .content();
+        } catch (Exception exception) {
+            throw new ExternalServiceException(
+                    "OpenAI sentiment analysis service is currently unavailable.",
+                    exception
+            );
+        }
 
         if (aiResponse == null || aiResponse.isBlank()) {
-            throw new IllegalStateException("OpenAI did not return a sentiment classification.");
+            throw new ExternalServiceException(
+                    "OpenAI did not return a sentiment classification."
+            );
         }
 
         String normalizedSentiment = aiResponse
@@ -88,11 +107,12 @@ public class FeedBackService {
         try {
             return SentimentType.valueOf(normalizedSentiment);
         } catch (IllegalArgumentException exception) {
-            throw new IllegalStateException(
-                    "OpenAI returned an invalid sentiment classification: " + aiResponse
+            throw new ExternalServiceException(
+                    "OpenAI returned an invalid sentiment classification."
             );
         }
     }
+
 
     private FeedbackResponse mapToResponse(FeedBack feedBack) {
         return new FeedbackResponse(

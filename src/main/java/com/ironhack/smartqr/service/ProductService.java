@@ -4,6 +4,7 @@ import com.ironhack.smartqr.dto.product.ProductRequest;
 import com.ironhack.smartqr.dto.product.ProductResponse;
 import com.ironhack.smartqr.entity.Product;
 import com.ironhack.smartqr.enums.ProductCategory;
+import com.ironhack.smartqr.exception.ResourceNotFoundException;
 import com.ironhack.smartqr.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -55,7 +56,7 @@ public class ProductService {
 
     public ProductResponse updateProduct(Long id, ProductRequest request) {
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Product not found with ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found with ID: " + id));
 
         product.setName(request.name());
         product.setDescription(request.description());
@@ -69,7 +70,7 @@ public class ProductService {
 
     public void deleteProduct(Long id) {
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Product not found with ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found with ID: " + id));
 
         product.setAvailable(false);
         productRepository.save(product);
@@ -80,7 +81,7 @@ public class ProductService {
         List<ProductResponse> outOfStockList = new ArrayList<>();
 
         for (Product product : allProducts) {
-            if (!product.getAvailable()) { // Si NO está disponible
+            if (!product.getAvailable()) {
                 outOfStockList.add(mapToResponse(product));
             }
         }
@@ -88,7 +89,7 @@ public class ProductService {
         return outOfStockList;
     }
 
-    // Este es nuestro método "helper" o auxiliar para no repetir código
+    // Método auxiliar para no repetir código
     private ProductResponse mapToResponse(Product product) {
         return new ProductResponse(
                 product.getId(),

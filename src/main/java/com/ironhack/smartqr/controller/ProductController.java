@@ -3,6 +3,7 @@ package com.ironhack.smartqr.controller;
 import com.ironhack.smartqr.dto.product.ProductRequest;
 import com.ironhack.smartqr.dto.product.ProductResponse;
 import com.ironhack.smartqr.service.ProductService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -33,14 +34,14 @@ public class ProductController {
     // [POST] ADMIN - Save Product
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ProductResponse createProduct(@RequestBody ProductRequest request) {
+    public ProductResponse createProduct(@Valid @RequestBody ProductRequest request) {
         return productService.createProduct(request);
     }
 
     // [PUT] ADMIN - Update Product
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public ProductResponse updateProduct(@PathVariable Long id, @RequestBody ProductRequest request) {
+    public ProductResponse updateProduct(@PathVariable Long id, @Valid @RequestBody ProductRequest request) {
         return productService.updateProduct(id, request);
     }
 

@@ -12,6 +12,8 @@ import com.ironhack.smartqr.enums.OrderStatus;
 import com.ironhack.smartqr.repository.OrderRepository;
 import com.ironhack.smartqr.repository.ProductRepository;
 import com.ironhack.smartqr.repository.UserRepository;
+import com.ironhack.smartqr.exception.BusinessRuleException;
+import com.ironhack.smartqr.exception.ResourceNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
@@ -33,7 +35,7 @@ public class OrderService {
     @Transactional
     public OrderResponse createOrder(String userEmail, CreateOrderRequest request) {
         User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado: " + userEmail));
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado: " + userEmail));
 
         Order order = new Order();
         order.setTableNumber(request.tableNumber());
@@ -49,7 +51,8 @@ public class OrderService {
 
         for (OrderItemRequest itemRequest : request.items()) {
             Product product = productRepository.findById(itemRequest.productId())
-                    .orElseThrow(() -> new RuntimeException("Product ID not found: " + itemRequest.productId()));
+                    .orElseThrow(() -> new ResourceNotFoundException
+                            ("Product not found with ID: " + itemRequest.productId()));
 
             BigDecimal subTotalLine = product.getPrice()
                     .multiply(BigDecimal.valueOf(itemRequest.quantity()));
@@ -91,7 +94,8 @@ public class OrderService {
             Long orderId
     ) {
         Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new RuntimeException("Order ID not found: " + orderId));
+                .orElseThrow(() -> new ResourceNotFoundException
+                        ("Order not found with ID: " + orderId));
 
         if (!internalStaffAccess) {
             validateCustomerOwnsOrder(order, authenticatedEmail);
@@ -118,7 +122,8 @@ public class OrderService {
     @Transactional
     public OrderResponse updateOrderStatus(Long orderId, OrderStatus newStatus) {
         Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new RuntimeException("Order ID not found: " + orderId));
+                .orElseThrow(() -> new ResourceNotFoundException
+                        ("Order not found with ID: " + orderId));
 
         order.setStatus(newStatus);
 
@@ -128,13 +133,14 @@ public class OrderService {
     @Transactional
     public OrderResponse cancelOrder(Long orderId) {
         Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new RuntimeException("Order ID not found: " + orderId));
+                .orElseThrow(() -> new ResourceNotFoundException
+                        ("Order not found with ID: " + orderId));
 
         if (order.getStatus() == OrderStatus.IN_KITCHEN
                 || order.getStatus() == OrderStatus.READY
                 || order.getStatus() == OrderStatus.DELIVERED) {
-            throw new IllegalStateException(
-                    "No se puede cancelar un pedido que ya está en preparación, listo o entregado."
+            throw new BusinessRuleException(
+                    "Cannot cancel an order that is already in preparation, ready or delivered."
             );
         }
 
@@ -149,11 +155,12 @@ public class OrderService {
             List<OrderItemRequest> newItemsRequest
     ) {
         Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new RuntimeException("Order ID not found: " + orderId));
+                .orElseThrow(() -> new ResourceNotFoundException
+                        ("Order not found with ID: " + orderId));
 
         if (order.getStatus() != OrderStatus.PENDING) {
-            throw new IllegalStateException(
-                    "Solo se pueden modificar las líneas de un pedido en estado PENDING."
+            throw new BusinessRuleException(
+                    "Order items can only be modified while the order is in PENDING status."
             );
         }
 
@@ -164,7 +171,8 @@ public class OrderService {
 
         for (OrderItemRequest itemRequest : newItemsRequest) {
             Product product = productRepository.findById(itemRequest.productId())
-                    .orElseThrow(() -> new RuntimeException("Product ID not found: " + itemRequest.productId()));
+                    .orElseThrow(() -> new ResourceNotFoundException
+                            ("Product not found with ID: " + itemRequest.productId()));
 
             BigDecimal subTotalLine = product.getPrice()
                     .multiply(BigDecimal.valueOf(itemRequest.quantity()));
@@ -187,6 +195,15 @@ public class OrderService {
         Order savedOrder = orderRepository.save(order);
 
         return mapToOrderResponse(savedOrder);
+    }
+
+    private void validateCustomerOwnsOrder(Order order, String authenticatedEmail) {
+        if (order.getUser() == null
+                || !order.getUser().getEmail().equalsIgnoreCase(authenticatedEmail)) {
+            throw new AccessDeniedException(
+                    "Cannot access order: this order does not belong to the authenticated customer."
+            );
+        }
     }
 
     public OrderResponse mapToOrderResponse(Order order) {
@@ -215,14 +232,5 @@ public class OrderService {
                 item.getSubTotal(),
                 item.getNotes()
         );
-    }
-
-    private void validateCustomerOwnsOrder(Order order, String authenticatedEmail) {
-        if (order.getUser() == null
-                || !order.getUser().getEmail().equalsIgnoreCase(authenticatedEmail)) {
-            throw new AccessDeniedException(
-                    "Cannot access order: this order does not belong to the authenticated customer."
-            );
-        }
     }
 }
