@@ -110,7 +110,7 @@
 
 ---
 
-## 🚧 Fase 9: `feature/exception-validation`
+## ✅ Fase 9: `feature/exception-validation`
 
 * [x] 9.1: Crear `ErrorResponse`, excepciones personalizadas y `GlobalExceptionHandler`.
 * [x] 9.2: Corregir los códigos HTTP de errores de negocio, evitando responder `403` para validaciones, recursos inexistentes o conflictos.
@@ -120,7 +120,17 @@
 
 ---
 
-## 🔲 Fase 10: `bugfix/final-refactor-security`
+## ✅ Fase 10: `feature/feedback-analytics`
+
+* [x] 10.1: Crear DTO de estadísticas de feedback para el panel administrativo.
+* [x] 10.2: Implementar cálculo de total de feedbacks, valoración media y distribución de sentimientos persistidos.
+* [x] 10.3: Exponer endpoint `GET /feedback/statistics` protegido para `ADMIN`.
+* [x] 10.4: Añadir pruebas HTTP de estadísticas de feedback al archivo de administrador.
+* [x] 10.5: Validar el flujo completo: `CUSTOMER` envía feedback analizado por OpenAI y `ADMIN` consulta sus estadísticas.
+
+---
+
+## 🚧 Fase 10: `bugfix/final-refactor-security`
 
 * [ ] 10.1: Separar la configuración de contraseñas en `security/EncoderConfig`, manteniendo BCrypt para no romper usuarios existentes.
 * [ ] 10.2: Refactorizar la capa de servicios siguiendo la estructura enseñada (`service` + `service/impl`) sin alterar la lógica ya validada.
@@ -150,7 +160,7 @@
 * [x] Gráfico de productos vendidos generado con escala de unidades enteras.
 * [x] PNG generados localmente ignorados por Git.
 * [x] Agente MCP local funcional y documentado.
-* [ ] Errores HTTP corregidos mediante manejo global de excepciones.
+* [x] Errores HTTP corregidos mediante manejo global de excepciones.
 * [ ] Flujo end-to-end final por perfiles ejecutado correctamente.
 
 ---
@@ -158,7 +168,7 @@
 # ⚠️ Deudas técnicas controladas
 
 * [x] Corregir en Fase 9 los errores de negocio que actualmente terminan respondiendo con HTTP `403`.
-* [ ] Aplicar validaciones completas de entrada y respuestas de error consistentes.
+* [x] Aplicar validaciones completas de entrada y respuestas de error consistentes.
 * [ ] Adaptar la estructura de seguridad y servicios al patrón enseñado en el bootcamp durante la Fase 10.
 * [ ] Mantener el README y los diagramas sincronizados con las rutas y clases realmente implementadas.
 * [x] No documentar MCP ni release final como terminados hasta validarlos mediante pruebas reales.

@@ -70,6 +70,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/payments/ticket/*").hasAnyRole("CUSTOMER", "EMPLOYEE", "ADMIN")
 
                         .requestMatchers(HttpMethod.POST, "/feedback").hasRole("CUSTOMER")
+                        .requestMatchers(HttpMethod.GET, "/feedback/statistics").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/ai/combo-recommendation").hasRole("CUSTOMER")
 
                         .requestMatchers(HttpMethod.GET, "/dashboard/metrics").hasRole("ADMIN")
