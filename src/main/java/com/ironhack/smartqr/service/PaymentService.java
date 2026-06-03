@@ -14,9 +14,12 @@ import com.ironhack.smartqr.enums.PaymentStatus;
 import com.ironhack.smartqr.repository.CashPaymentRepository;
 import com.ironhack.smartqr.repository.OrderRepository;
 import com.ironhack.smartqr.repository.PaymentRepository;
+import com.ironhack.smartqr.exception.BusinessRuleException;
+import com.ironhack.smartqr.exception.ConflictException;
+import com.ironhack.smartqr.exception.ResourceNotFoundException;
+import org.springframework.security.access.AccessDeniedException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -36,20 +39,21 @@ public class PaymentService {
             CardPaymentRequest request
     ) {
         Order order = orderRepository.findById(request.orderId())
-                .orElseThrow(() -> new RuntimeException("Order ID not found: " + request.orderId()));
+                .orElseThrow(() -> new ResourceNotFoundException
+                        ("Order ID not found: " + request.orderId()));
 
         validateCustomerOwnsOrder(order, authenticatedEmail);
 
         if (order.getStatus() != OrderStatus.PENDING) {
-            throw new IllegalStateException(
-                    "Cannot process payment: This order is already paid or unavailable."
-            );
+            throw new ConflictException(
+                    "Cannot process payment: This order is already paid or unavailable.");
         }
 
         boolean gatewayApproval = true;
 
         if (!gatewayApproval) {
-            throw new RuntimeException("Stripe Gateway rejected the credit card transaction.");
+            throw new BusinessRuleException
+                    ("Card payment was rejected by the payment gateway");
         }
 
         CardPayment cardPayment = new CardPayment();
@@ -76,21 +80,20 @@ public class PaymentService {
             CashPaymentRequest request
     ) {
         Order order = orderRepository.findById(request.orderId())
-                .orElseThrow(() -> new RuntimeException("Order not found with ID: " + request.orderId()));
+                .orElseThrow(() -> new ResourceNotFoundException
+                        ("Order not found with ID: " + request.orderId()));
 
         validateCustomerOwnsOrder(order, authenticatedEmail);
 
         if (order.getStatus() != OrderStatus.PENDING) {
-            throw new IllegalStateException(
-                    "Cannot request cash checkout: This order is already paid or unavailable."
-            );
+            throw new ConflictException(
+                    "Cannot request cash checkout: This order is already paid or unavailable.");
         }
 
         if (request.cashReceived() == null
                 || request.cashReceived().compareTo(order.getTotalPrice()) < 0) {
-            throw new IllegalArgumentException(
-                    "Cannot request cash checkout: cash received must be equal to or greater than the order total."
-            );
+            throw new BusinessRuleException(
+                    "Cannot request cash checkout: cash received must be equal to or greater than the order total.");
         }
 
         CashPayment cashPayment = new CashPayment();
@@ -111,7 +114,8 @@ public class PaymentService {
     @Transactional
     public PaymentResponse confirmCashPayment(Long orderId) {
         Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new RuntimeException("Order ID not found: " + orderId));
+                .orElseThrow(() -> new ResourceNotFoundException
+                        ("Order not found with ID: " + orderId));
 
         List<CashPayment> allCashPayments = cashPaymentRepository.findAll();
         CashPayment targetPayment = null;
@@ -125,7 +129,7 @@ public class PaymentService {
         }
 
         if (targetPayment == null) {
-            throw new RuntimeException("No pending cash payment found for Order ID: " + orderId);
+            throw new ResourceNotFoundException("No pending cash payment found for order ID: " + orderId);
         }
 
         targetPayment.setConfirmed(true);
@@ -145,7 +149,8 @@ public class PaymentService {
             Long orderId
     ) {
         Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new RuntimeException("Order ID not found: " + orderId));
+                .orElseThrow(() -> new ResourceNotFoundException
+                        ("Order ID not found: " + orderId));
 
         if (!internalStaffAccess) {
             validateCustomerOwnsOrder(order, authenticatedEmail);
@@ -154,13 +159,13 @@ public class PaymentService {
         Payment payment = order.getPayment();
 
         if (payment == null) {
-            throw new IllegalStateException(
+            throw new BusinessRuleException(
                     "Cannot generate ticket: this order has no associated payment."
             );
         }
 
         if (payment.getPaymentStatus() != PaymentStatus.COMPLETED) {
-            throw new IllegalStateException(
+            throw new BusinessRuleException(
                     "Cannot generate ticket: payment has not been completed."
             );
         }

@@ -2,6 +2,7 @@ package com.ironhack.smartqr.service;
 
 import com.ironhack.smartqr.dto.agent.LocalAgentRequest;
 import com.ironhack.smartqr.dto.agent.LocalAgentResponse;
+import com.ironhack.smartqr.exception.ExternalServiceException;
 import com.ironhack.smartqr.tool.AdminAgentTools;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -24,25 +25,34 @@ public class LocalAgentService {
     }
 
     public LocalAgentResponse askLocalAgent(LocalAgentRequest request) {
-        String answer = localOllamaChatClient.prompt()
-                .system("""
-                    You are the internal administrative assistant for SmartQR restaurant management.
+        String answer;
 
-                    Rules:
-                    - Reply in Spanish.
-                    - Use the available tools before answering questions about sales, income, orders, kitchen workload or menu products.
-                    - You only have read-only access to operational information.
-                    - Never claim that you created, modified, deleted or confirmed any data.
-                    - If the administrator asks you to modify data, explain that the local agent is read-only.
-                    - Give a short and clear answer suitable for a restaurant administrator.
-                    """)
-                .user(request.question())
-                .tools(adminAgentTools)
-                .call()
-                .content();
+
+        try {
+            answer = localOllamaChatClient.prompt()
+                    .system("""
+                            You are the internal administrative assistant for SmartQR restaurant management.
+                            Rules:
+                            - Reply in Spanish.
+                            - Use the available tools before answering questions about sales, income, orders, kitchen workload or menu products.
+                            - You only have read-only access to operational information.
+                            - Never claim that you created, modified, deleted or confirmed any data.
+                            - If the administrator asks you to modify data, explain that the local agent is read-only.
+                            - Give a short and clear answer suitable for a restaurant administrator.
+                            """)
+                    .user(request.question())
+                    .tools(adminAgentTools)
+                    .call()
+                    .content();
+        } catch (Exception exception) {
+            throw new ExternalServiceException(
+                    "Local Ollama agent service is currently unavailable.",
+                    exception
+            );
+        }
 
         if (answer == null || answer.isBlank()) {
-            throw new IllegalStateException(
+            throw new ExternalServiceException(
                     "The local Ollama agent did not return a response."
             );
         }
@@ -52,6 +62,7 @@ public class LocalAgentService {
                 answer.trim(),
                 LOCAL_MODEL_NAME
         );
-    }
 
+
+    }
 }
