@@ -1,27 +1,26 @@
+### EJECUTAR DESPUES DE CUSTOMER_REQUESTS.http EN BASE DE DATOS LIMPIA:
+### Pedido ID 3: pago en efectivo pendiente de confirmar.
+### Pedido ID 4: pedido PENDING que el empleado gestiona en cocina.
+
+### PEGAR AQUI EL TOKEN DEVUELTO POR EL LOGIN(0):
+@employeeToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJlbXBsb3llZUBzbWFydHFyLmNvbSIsImV4cCI6MTc4MDUzNTc0MSwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL2FwaS9sb2dpbiIsInJvbGVzIjpbIlJPTEVfRU1QTE9ZRUUiXX0.C6KCogpDD-jykhc_Q_WwwCEB7_FCffSKH-TH6ZmV5UY
+
+### =========================================
+###          EMPLOYEE LOGIN
 ### =========================================
 
-### AUTENTICACIÓN EMPLEADO - EMPLOYEE LOGIN
-
-### =========================================
-
-### 0. Login empleado y guardar token JWT automáticamente
+### 0. Login empleado
 
 POST http://localhost:8080/api/login
 Content-Type: application/json
 
 {
-  "username": "[employee@smartqr.com](mailto:employee@smartqr.com)",
+  "username": "employee@smartqr.com",
   "password": "Employee123!"
 }
 
-> {%
-     client.global.set("employeeToken", response.body.access_token);
-    %}
-
 ### =========================================
-
-### GENERACIÓN QR - EMPLOYEE
-
+###         GENERACIÓN QR - EMPLOYEE
 ### =========================================
 
 ### 1. Generar y guardar QR para la Mesa 6
@@ -35,11 +34,8 @@ Authorization: Bearer {{employeeToken}}
 ### Archivo generado: requests/table_qr/table-6-qr.png
 
 ### =========================================
-
-### PRUEBAS DE PRODUCTOS
-
-### (EMPLOYEE)
-
+###         PRUEBAS DE PRODUCTOS
+###             (EMPLOYEE)
 ### =========================================
 
 ### 2. [EMPLOYEE] Consultar productos fuera de stock
@@ -47,8 +43,6 @@ Authorization: Bearer {{employeeToken}}
 GET http://localhost:8080/products/out-of-stock
 Accept: application/json
 Authorization: Bearer {{employeeToken}}
-
-### Resultado esperado: HTTP 200 OK
 
 ### 3. [EMPLOYEE] No puede crear productos nuevos
 
@@ -64,12 +58,9 @@ Authorization: Bearer {{employeeToken}}
   "imageUrl": "https://ejemplo.com/no-permitido.png"
 }
 
-### Resultado esperado: HTTP 403 Forbidden
-
 ### =========================================
-
-### PRUEBAS DE EMPLEADO (COCINA Y MOSTRADOR)
-
+###         PRUEBAS DE EMPLEADO
+###         (COCINA Y MOSTRADOR)
 ### =========================================
 
 ### 4. Ver todos los pedidos activos de la Mesa 5
@@ -78,15 +69,11 @@ GET http://localhost:8080/orders/table/5
 Accept: application/json
 Authorization: Bearer {{employeeToken}}
 
-### Resultado esperado: HTTP 200 OK
-
 ### 5. Ver la cola de cocina
 
 GET http://localhost:8080/orders/kitchen/queue
 Accept: application/json
 Authorization: Bearer {{employeeToken}}
-
-### Resultado esperado: HTTP 200 OK
 
 ### 6. Modificar items del Pedido ID 4 mientras sigue PENDING
 
@@ -107,15 +94,11 @@ Authorization: Bearer {{employeeToken}}
   }
 ]
 
-### Resultado esperado: HTTP 200 OK
-
 ### 7. El cocinero coge la comanda: cambiar Pedido ID 4 a IN_KITCHEN
 
 PATCH http://localhost:8080/orders/4/status?status=IN_KITCHEN
 Accept: application/json
 Authorization: Bearer {{employeeToken}}
-
-### Resultado esperado: HTTP 200 OK
 
 ### 8. El cocinero termina la comanda: cambiar Pedido ID 4 a READY
 
@@ -123,22 +106,14 @@ PATCH http://localhost:8080/orders/4/status?status=READY
 Accept: application/json
 Authorization: Bearer {{employeeToken}}
 
-### Resultado esperado: HTTP 200 OK
-
 ### 9. Intentar cancelar el Pedido ID 4 ya preparado
 
 PUT http://localhost:8080/orders/4/cancel
 Accept: application/json
 Authorization: Bearer {{employeeToken}}
 
-### Resultado esperado: solicitud rechazada por regla de negocio
-
-### Actualmente puede responder HTTP 403 hasta corregir excepciones en Fase 9
-
 ### =========================================
-
-### PRUEBAS DE PAGO EN EFECTIVO
-
+###         PRUEBAS DE PAGO EN EFECTIVO
 ### =========================================
 
 ### 10. Confirmar pago en Efectivo del Pedido ID 3
@@ -147,11 +122,8 @@ PUT http://localhost:8080/payments/cash/3/confirm
 Accept: application/json
 Authorization: Bearer {{employeeToken}}
 
-
 ### 11. Descargar ticket del Pedido ID 3 pagado en efectivo
 
 GET http://localhost:8080/payments/ticket/3
 Accept: text/plain
 Authorization: Bearer {{employeeToken}}
-
-### Resultado esperado: HTTP 200 y ticket con Payment method CASH

@@ -3,6 +3,7 @@ package com.ironhack.smartqr.security;
 import com.ironhack.smartqr.security.filters.CustomAuthenticationFilter;
 import com.ironhack.smartqr.security.filters.CustomAuthorizationFilter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -12,8 +13,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -24,13 +23,16 @@ public class SecurityConfig {
 
     private final AuthenticationConfiguration authenticationConfiguration;
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+    @Value("${jwt.secret}")
+    private String jwtSecret;
+
+    @Value("${jwt.expiration}")
+    private long jwtExpiration;
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+    public AuthenticationManager authenticationManager(
+            AuthenticationConfiguration config
+    ) throws Exception {
         return config.getAuthenticationManager();
     }
 
@@ -38,9 +40,11 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .sessionManagement(session ->
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
                 .authorizeHttpRequests(auth -> auth
-                        
+
                         .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/login").permitAll()
 
@@ -79,12 +83,21 @@ public class SecurityConfig {
 
                         .requestMatchers(HttpMethod.POST, "/agent/local/ask").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/mcp").hasRole("ADMIN")
+
                         .anyRequest().denyAll()
                 )
-                .addFilter(new CustomAuthenticationFilter(authenticationManager(authenticationConfiguration)))
-                .addFilterBefore(new CustomAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
+                .addFilter(
+                        new CustomAuthenticationFilter(
+                                authenticationManager(authenticationConfiguration),
+                                jwtSecret,
+                                jwtExpiration
+                        )
+                )
+                .addFilterBefore(
+                        new CustomAuthorizationFilter(jwtSecret),
+                        UsernamePasswordAuthenticationFilter.class
+                );
 
         return http.build();
     }
 }
-

@@ -1,174 +1,227 @@
-# 📋 Task Manager - SMARTQR Final Project (GitFlow)
+# 📋 Task Manager - SMARTQR API Final Project (GitFlow)
+
+
+## Estado actual del proyecto
+
+**Rama en desarrollo:** `feature/final-refactor-review`
+
+A estas alturas la API ya permite gestionar menú, pedidos, pagos, roles, dashboard, gráficos, IA con OpenAI, agente local con Ollama/MCP, excepciones controladas y estadísticas de feedback para administración.
+
+La última parte del trabajo no consiste en añadir funcionalidades grandes, sino en dejar el proyecto seguro, limpio, fácil de explicar en la presentación y probado de principio a fin.
+
+---
 
 ## ✅ Fase 1: `setup/init-project`
 
-* [x] 1.1: Inicializar Spring Boot, `pom.xml`, `application.properties` y estructura base de carpetas.
-* [x] 1.2: Crear entidades con herencia (`Payment` → `CardPayment` / `CashPayment`), enums y repositorios JPA.
-* [x] 1.3: Añadir diagramas de arquitectura, roadmap y plantillas HTTP iniciales.
+**Objetivo:** crear la base del proyecto para poder desarrollar por funcionalidades sin mezclarlo todo desde el principio.
+
+* [x] Inicializar Spring Boot, `pom.xml`, `application.properties` y carpetas principales.
+* [x] Crear entidades, enums y repositorios JPA.
+* [x] Modelar la herencia de pagos: `Payment` → `CardPayment` / `CashPayment`.
+* [x] Añadir roadmap, diagramas iniciales y primeros archivos HTTP.
 
 ---
 
 ## ✅ Fase 2: `feature/auth-security`
 
-* [x] 2.1: Implementar autenticación JWT mediante filtros de Spring Security.
-* [x] 2.2: Crear `AuthController`, `AuthenticationService` y DTOs de autenticación.
-* [x] 2.3: Configurar acceso autenticado inicial en `SecurityConfig`.
+**Objetivo:** permitir que los usuarios puedan identificarse y recibir un token JWT para acceder a las rutas protegidas.
+
+* [x] Crear DTOs, `AuthController` y `AuthenticationService`.
+* [x] Implementar autenticación JWT mediante filtros de Spring Security.
+* [x] Configurar una primera protección de endpoints en `SecurityConfig`.
 
 ---
 
 ## ✅ Fase 3: `feature/catalog-management`
 
-* [x] 3.1: Implementar CRUD de productos mediante `ProductController`, `ProductService` y DTOs.
-* [x] 3.2: Añadir pruebas HTTP del catálogo de productos.
+**Objetivo:** disponer de un menú administrable y visible para el cliente.
+
+* [x] Implementar CRUD de productos con controlador, servicio y DTOs.
+* [x] Exponer el menú público de productos disponibles.
+* [x] Añadir pruebas HTTP del catálogo.
 
 ---
 
 ## ✅ Fase 4: `feature/order-processing`
 
-* [x] 4.1: Implementar creación de comandas, generación de QR y cálculo de subtotales.
-* [x] 4.2: Implementar gestión de estados, modificaciones de pedidos y cola de cocina.
-* [x] 4.3: Añadir pruebas HTTP para cliente y empleado.
+**Objetivo:** convertir el menú en un flujo real de restaurante: el cliente pide y el personal gestiona la comanda.
+
+* [x] Implementar creación de pedidos y cálculo de subtotales en backend.
+* [x] Implementar consulta, modificación, cancelación y estados del pedido.
+* [x] Implementar cola de cocina.
+* [x] Añadir generación de QR de mesa y pruebas HTTP para cliente y empleado.
 
 ---
 
 ## ✅ Fase 5: `feature/payments-billing`
 
-* [x] 5.1: Implementar pasarela simulada de tarjeta y flujo de pago en efectivo.
-* [x] 5.2: Implementar endpoint de generación de tickets imprimibles de pedido.
-* [x] 5.3: Validar que un pago en efectivo insuficiente sea rechazado.
-* [x] 5.4: Añadir pruebas HTTP de pagos, ticket y autenticación por perfil.
+**Objetivo:** cerrar el ciclo del pedido con pago y ticket.
+
+* [x] Implementar pago simulado con tarjeta.
+* [x] Implementar solicitud y confirmación de pago en efectivo.
+* [x] Implementar generación de ticket imprimible.
+* [x] Validar que un pago cash insuficiente sea rechazado.
+* [x] Añadir pruebas HTTP de pagos y ticket.
 
 ---
 
-## ✅ Corrección detectada durante pruebas: `bugfix/auth-login-flow`
+## ✅ Corrección durante pruebas: `bugfix/auth-login-flow`
 
-* [x] A.1: Investigar por qué el registro funcionaba pero el login devolvía `403`.
-* [x] A.2: Crear `CustomUserDetailsService` para cargar usuarios registrados desde MySQL.
-* [x] A.3: Configurar el filtro de autenticación para procesar `POST /api/login`.
-* [x] A.4: Validar generación de JWT y acceso autenticado a rutas protegidas.
-* [x] A.5: Integrar la corrección en `develop` y posteriormente en la rama de pagos.
+**Motivo:** el registro funcionaba, pero los usuarios registrados no podían iniciar sesión correctamente.
 
----
-
-## ✅ Corrección detectada durante pruebas: `bugfix/product-seed-data`
-
-* [x] D.1: Añadir `data.sql` con catálogo inicial válido para probar pedidos y pagos.
-* [x] D.2: Eliminar datos duplicados del catálogo inicial.
-* [x] D.3: Añadir restricción única al nombre de producto para evitar duplicados.
-* [x] D.4: Validar arranque de la aplicación y carga correcta del menú.
-* [x] D.5: Integrar la corrección en `develop` y posteriormente en la rama de pagos.
+* [x] Investigar el `403` del login.
+* [x] Crear `CustomUserDetailsService` para cargar usuarios desde MySQL.
+* [x] Configurar correctamente `POST /api/login`.
+* [x] Validar generación de JWT y acceso autenticado.
+* [x] Integrar la corrección en `develop`.
 
 ---
 
-## ✅ Security Hardening: `feature/security-rbac`
+## ✅ Corrección durante pruebas: `bugfix/product-seed-data`
 
-* [x] S.1: Auditar las rutas actuales de productos, pedidos, pagos y QR.
-* [x] S.2: Implementar autorización real basada en roles (`CUSTOMER`, `EMPLOYEE`, `ADMIN`) en `SecurityConfig`.
-- [x] S.3: Mantener público el acceso al menú digital y restringir la generación de QR de mesa a `EMPLOYEE` y `ADMIN`.
-- [x] S.4: Guardar los códigos QR generados en `requests/table_qr/` identificados por número de mesa.
-- [x] S.5: Añadir usuarios de prueba controlados para `EMPLOYEE` y `ADMIN`, sin permitir su registro público.
-- [x] S.6: Actualizar los archivos HTTP de cliente, empleado y administrador para probar permisos por rol.
-- [x] S.7: Validar accesos permitidos y denegados para cada perfil.
-- [x] S.8: Documentar la matriz inicial de autorización por roles y el flujo de generación de QR.
+**Motivo:** sin productos iniciales consistentes no se podían probar bien pedidos ni pagos.
+
+* [x] Crear `data.sql` con catálogo de prueba.
+* [x] Eliminar productos duplicados.
+* [x] Añadir restricción única al nombre del producto.
+* [x] Validar carga del menú al reiniciar la aplicación.
+* [x] Integrar la corrección en `develop`.
 
 ---
-## ✅ Corrección detectada durante pruebas: `bugfix/customer-order-ownership`
 
-- [x] O.1: Impedir que un cliente consulte pedidos pertenecientes a otro usuario.
-- [x] O.2: Impedir que un cliente pague con tarjeta un pedido perteneciente a otro usuario.
-- [x] O.3: Impedir que un cliente solicite pago cash para un pedido perteneciente a otro usuario.
-- [x] O.4: Impedir que un cliente consulte tickets pertenecientes a otro usuario.
-- [x] O.5: Validar mediante requests intentos de acceso cruzado entre dos clientes.
+## ✅ Refuerzo de seguridad: `feature/security-rbac`
+
+**Objetivo:** que cada perfil pueda hacer solo lo que le corresponde.
+
+* [x] Auditar rutas de productos, pedidos, pagos y QR.
+* [x] Aplicar roles `CUSTOMER`, `EMPLOYEE` y `ADMIN` en `SecurityConfig`.
+* [x] Mantener público el menú digital.
+* [x] Restringir generación de QR a personal interno.
+* [x] Guardar QR generados localmente e ignorarlos en Git.
+* [x] Crear usuarios controlados para pruebas de `EMPLOYEE` y `ADMIN`.
+* [x] Añadir requests por rol y validar accesos permitidos y denegados.
+* [x] Documentar la matriz inicial de permisos.
+
+---
+
+## ✅ Corrección durante pruebas: `bugfix/customer-order-ownership`
+
+**Motivo:** un cliente no debe poder acceder a un pedido ajeno modificando manualmente el ID en la URL.
+
+* [x] Impedir que un cliente consulte pedidos de otro cliente.
+* [x] Impedir pagos con tarjeta sobre pedidos ajenos.
+* [x] Impedir solicitudes cash sobre pedidos ajenos.
+* [x] Impedir consulta de tickets ajenos.
+* [x] Validar accesos cruzados entre dos clientes.
 
 ---
 
 ## ✅ Fase 6: `feature/ai-integration`
 
-* [x] 6.1: Configurar Spring AI con OpenAI mediante la variable de entorno segura `OPENAI_API_KEY`.
-* [x] 6.2: Implementar análisis de sentimiento en feedback mediante `FeedBackController`, `FeedBackService` y DTOs.
-* [x] 6.3: Implementar recomendaciones automatizadas de productos o combos mediante `AiController` y `AiService`.
-* [x] 6.4: Añadir pruebas HTTP de endpoints de IA según rol autorizado.
+**Objetivo:** utilizar OpenAI en funcionalidades visibles para el cliente.
+
+* [x] Configurar Spring AI con OpenAI usando `OPENAI_API_KEY`.
+* [x] Analizar el sentimiento de un feedback al guardarlo.
+* [x] Crear recomendaciones automáticas de combos con productos reales del menú.
+* [x] Añadir pruebas HTTP para feedback y recomendaciones.
+
+**Decisión explicable:** OpenAI se utiliza en funcionalidades orientadas al cliente porque interpreta texto libre y genera recomendaciones.
 
 ---
 
 ## ✅ Fase 7: `feature/analytics-dashboard`
 
-* [x] 7.1: Implementar métricas de ingresos mediante una consulta SQL nativa, una consulta JPQL y cálculos básicos en servicio.
-* [x] 7.2: Crear dashboard administrativo mediante `DashboardController`, `DashboardService` y DTOs.
-* [x] 7.3: Generar gráficos PNG en servidor mediante `ChartController`, `ChartService` y JFreeChart.
-* [x] 7.4: Añadir pruebas HTTP del dashboard y de generación de gráficos para `ADMIN`.
+**Objetivo:** que administración pueda consultar resultados del restaurante de forma visual.
+
+* [x] Calcular ingresos y ventas usando consulta SQL nativa, JPQL y lógica sencilla en servicio.
+* [x] Crear endpoint de métricas administrativas.
+* [x] Generar PNG con JFreeChart: gráfico circular de ingresos y barras de productos vendidos.
+* [x] Ajustar escala de productos vendidos a unidades enteras.
+* [x] Ignorar imágenes PNG generadas localmente en Git.
+* [x] Añadir pruebas HTTP para `ADMIN`.
 
 ---
 
 ## ✅ Fase 8: `feature/mcp-local-agent`
 
-* [x] 8.1: Investigar y configurar la integración local con Ollama para el agente MCP.
-* [x] 8.2: Crear el servicio del agente local y definir herramientas mediante `@Tool`.
-* [x] 8.3: Implementar un caso de uso demostrable del agente sobre datos o acciones del sistema.
-* [x] 8.4: Proteger los endpoints del agente según el rol autorizado.
-* [x] 8.5: Añadir pruebas HTTP y documentar claramente qué funcionalidad usa OpenAI y cuál usa Ollama/MCP.
+**Objetivo:** añadir un asistente administrativo local, separado de las funciones de cliente que usan OpenAI.
+
+* [x] Configurar Ollama con el modelo local `qwen3:4b`.
+* [x] Mantener OpenAI como cliente principal y seleccionar Ollama mediante `@Qualifier` para el agente local.
+* [x] Crear endpoint de agente administrativo protegido para `ADMIN`.
+* [x] Crear herramientas de solo lectura para métricas, cocina y menú.
+* [x] Publicar esas herramientas mediante MCP HTTP.
+* [x] Validar `tools/list` y `tools/call`.
+* [x] Añadir pruebas HTTP del agente y MCP.
+
+**Decisión explicable:** el agente local consulta información interna sin modificar datos; por eso sus herramientas están marcadas como de solo lectura y no destructivas.
 
 ---
 
 ## ✅ Fase 9: `feature/exception-validation`
 
-* [x] 9.1: Crear `ErrorResponse`, excepciones personalizadas y `GlobalExceptionHandler`.
-* [x] 9.2: Corregir los códigos HTTP de errores de negocio, evitando responder `403` para validaciones, recursos inexistentes o conflictos.
-* [x] 9.3: Auditar DTOs y aplicar validaciones con `@Valid`, `@NotNull`, `@NotBlank`, `@Min`, `@Max` y restricciones necesarias.
-* [X] 9.4: Validar mediante requests los errores de registro, pedidos, pagos, feedback, IA y dashboard.
-* [X] 9.5: Comprobar que `403 Forbidden` queda reservado para accesos realmente no autorizados.
+**Objetivo:** que los errores de la API expliquen realmente lo que ha ocurrido.
+
+* [x] Crear `ErrorResponse`, excepciones personalizadas y `GlobalExceptionHandler`.
+* [x] Corregir estados HTTP: validaciones `400`, autenticación inválida `401`, acceso prohibido `403`, recurso inexistente `404` y conflicto `409`.
+* [x] Aplicar validaciones en DTOs y controladores con `@Valid`.
+* [x] Corregir el filtro JWT para que un error de negocio no termine fingiendo ser un `403`.
+* [x] Crear `EXCEPTION_VALIDATION_REQUESTS.http`.
+* [x] Validar errores de registro, pedidos, pagos, IA, feedback y permisos reales.
+
+**Decisión explicable:** `403` queda reservado para operaciones realmente prohibidas, como acceder al pedido de otro cliente o intentar entrar en una ruta de administrador.
 
 ---
 
 ## ✅ Fase 10: `feature/feedback-analytics`
 
-* [x] 10.1: Crear DTO de estadísticas de feedback para el panel administrativo.
-* [x] 10.2: Implementar cálculo de total de feedbacks, valoración media y distribución de sentimientos persistidos.
-* [x] 10.3: Exponer endpoint `GET /feedback/statistics` protegido para `ADMIN`.
-* [x] 10.4: Añadir pruebas HTTP de estadísticas de feedback al archivo de administrador.
-* [x] 10.5: Validar el flujo completo: `CUSTOMER` envía feedback analizado por OpenAI y `ADMIN` consulta sus estadísticas.
+**Objetivo:** completar el caso de uso del diagrama en el que administración consulta resultados del feedback analizado por IA.
+
+* [x] Crear `FeedbackStatisticsResponse`.
+* [x] Calcular total de opiniones, media de valoración y conteos `POSITIVE`, `NEUTRAL` y `NEGATIVE`.
+* [x] Exponer `GET /feedback/statistics` solo para `ADMIN`.
+* [x] Añadir prueba HTTP en el archivo de administrador.
+* [x] Validar el flujo: el cliente envía feedback, OpenAI guarda el sentimiento y administración consulta la estadística.
+
+**Decisión explicable:** el endpoint de estadísticas no vuelve a llamar a OpenAI; utiliza el sentimiento ya guardado cuando se creó el feedback.
 
 ---
 
-## 🚧 Fase 10: `bugfix/final-refactor-security`
+## 🚧 Fase 11: `feature/final-refactor-review`
 
-* [ ] 10.1: Separar la configuración de contraseñas en `security/EncoderConfig`, manteniendo BCrypt para no romper usuarios existentes.
-* [ ] 10.2: Refactorizar la capa de servicios siguiendo la estructura enseñada (`service` + `service/impl`) sin alterar la lógica ya validada.
-* [ ] 10.3: Externalizar la clave secreta JWT y eliminar secretos escritos directamente en código o propiedades.
-* [ ] 10.4: Auditar permisos RBAC de todos los endpoints finales, incluidos IA, dashboard y MCP.
-* [ ] 10.5: Limpiar imports, comentarios, nombres, código no utilizado y archivos temporales.
-* [ ] 10.6: Crear un archivo HTTP end-to-end definitivo para validar el flujo completo de `CUSTOMER`, `EMPLOYEE` y `ADMIN`.
+**Objetivo:** dejar el proyecto con una estructura de seguridad que pueda explicar en clase y ejecutar una comprobación final sin automatismos que no hemos trabajado en el bootcamp.
 
----
+* [x] 11.1: Separar `PasswordEncoder` en `security/EncoderConfig`, como en el ejemplo de clase, usando `PasswordEncoderFactories.createDelegatingPasswordEncoder()`.
+    * Justificación: la seguridad queda separada por responsabilidades y los hashes identifican su algoritmo con `{bcrypt}`.
+    * Validación realizada: login correcto de `ADMIN`, `EMPLOYEE` y un `CUSTOMER` nuevo.
 
-## 🔲 Fase 11: `release/v1.0`
+* [x] 11.2: Sacar la clave JWT de los filtros y leerla desde la variable de entorno `JWT_SECRET`.
+    * Justificación: la clave que firma tokens no debe quedar escrita directamente en el código ni subirse al repositorio.
+    * Validación realizada: login correcto de los tres perfiles y acceso a rutas protegidas utilizando tokens generados con la nueva variable de entorno.
 
-* [ ] 11.1: Ocultar credenciales, tokens y API Keys; higienizar `application.properties` y documentación.
-* [ ] 11.2: Crear o actualizar el UML Class Diagram final para que coincida con el código entregado.
-* [ ] 11.3: Corregir y completar `README.md` con configuración, endpoints, arquitectura, tecnologías y pruebas reales.
-* [ ] 11.4: Añadir enlaces al repositorio, herramienta de gestión de tareas y presentación online.
-* [ ] 11.5: Preparar slides online y guion de demo de cinco minutos.
-* [ ] 11.6: Ejecutar revisión final de arranque, requests, seguridad, gráficos, IA, MCP y GitHub.
-* [ ] 11.7: Integrar ramas pendientes, crear tag y publicar release final `v1.0`.
+* [x] 11.3: Sustituir los archivos `.http` por variables de token visibles en la cabecera para un demo en la presentación.
+    * Justificación: después de hacer login copio el token una sola vez arriba del archivo y puedo ejecutar el resto de peticiones de forma clara durante la presentación.
+    * Archivos a revisar: `CUSTOMER_REQUESTS.http`, `EMPLOYEE_REQUESTS.http`, `ADMIN_REQUESTS.http` y `EXCEPTION_VALIDATION_REQUESTS.http`.
 
----
+* [x] 11.4: Auditar el DTO de entrada de líneas de pedido y decidir si se eliminan campos que el backend no utiliza (`productName` y `subtotal`).
+    * Justificación: el cliente solo debería enviar producto, cantidad y notas; el nombre y precio real deben salir de la base de datos.
 
-# 🧪 Evidencias pendientes de validación
+* [x] 11.5: Ejecutar el flujo funcional completo con los tres perfiles y comprobar permisos finales.
+    * Incluye: menú, QR, pedidos, pagos, ticket, feedback, recomendación IA, dashboard, gráficos, estadísticas de feedback, agente local y MCP.
 
-* [x] Dashboard administrativo accesible únicamente para `ADMIN`.
-* [x] Gráfico circular de ingresos por método de pago generado como PNG.
-* [x] Gráfico de productos vendidos generado con escala de unidades enteras.
-* [x] PNG generados localmente ignorados por Git.
-* [x] Agente MCP local funcional y documentado.
-* [x] Errores HTTP corregidos mediante manejo global de excepciones.
-* [ ] Flujo end-to-end final por perfiles ejecutado correctamente.
+* [x] 11.6: Limpiar imports, comentarios antiguos, archivos temporales y revisar el diff antes del commit.
+    * Justificación: cerrar la rama solo con cambios necesarios y explicables.
 
 ---
 
-# ⚠️ Deudas técnicas controladas
+## 🔲 Fase 12: `release/v1.0.0`
 
-* [x] Corregir en Fase 9 los errores de negocio que actualmente terminan respondiendo con HTTP `403`.
-* [x] Aplicar validaciones completas de entrada y respuestas de error consistentes.
-* [ ] Adaptar la estructura de seguridad y servicios al patrón enseñado en el bootcamp durante la Fase 10.
-* [ ] Mantener el README y los diagramas sincronizados con las rutas y clases realmente implementadas.
-* [x] No documentar MCP ni release final como terminados hasta validarlos mediante pruebas reales.
+**Objetivo:** preparar la entrega y la demostración final del proyecto.
+
+* [ ] 12.1: Preparar un flujo de demo corto y ordenado para la presentación.
+* [ ] 12.2: Actualizar `README.md` con configuración, variables de entorno, arquitectura, endpoints y cómo probar el proyecto.
+* [ ] 12.3: Actualizar diagramas para que coincidan con las rutas y funcionalidades finales.
+* [ ] 12.4: Revisar que no se suban claves, tokens, imágenes generadas ni archivos temporales.
+* [ ] 12.5: Preparar slides y guion de presentación.
+* [ ] 12.6: Ejecutar la última prueba completa desde una base de datos limpia.
+* [ ] 12.7: Integrar ramas pendientes, crear tag y publicar release `v1.0.0`.

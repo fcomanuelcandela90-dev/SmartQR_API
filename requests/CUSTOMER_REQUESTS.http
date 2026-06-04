@@ -1,8 +1,14 @@
-### =========================================
+### DEMO FINAL CON BASE DE DATOS LIMPIA:
+### Este archivo crea los pedidos en orden; por eso las pruebas utilizan IDs 1, 2, 3 y 4.
+### En una aplicación web real, el frontend enviaría automáticamente el orderId devuelto al crear cada pedido.
 
+### PEGA AQUI EL TOKEN DEVUELTO POR EL LOGIN (0.1):
+@customerToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmcmFuLmN1c3RvbWVyQHNtYXJ0cXIuY29tIiwiZXhwIjoxNzgwNTM1MzQ0LCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODAvYXBpL2xvZ2luIiwicm9sZXMiOlsiUk9MRV9DVVNUT01FUiJdfQ.b0HX4W5Sd06E99SCzI9QVRjzroaQdbTjQqBejYZ2Akk
+
+### =========================================
 ### AUTENTICACIÓN CLIENTE - CUSTOMER
-
 ### =========================================
+
 
 ### 0. [CUSTOMER] Registrar nuevo cliente
 
@@ -15,7 +21,8 @@ Content-Type: application/json
   "password": "Customer123!"
 }
 
-### 0.1 [CUSTOMER] Login cliente y guardar token JWT automáticamente
+### 0.1 [CUSTOMER] Login cliente
+### Tras ejecutar esta petición, copia access_token en @customerToken de la cabecera.
 
 POST http://localhost:8080/api/login
 Content-Type: application/json
@@ -25,16 +32,9 @@ Content-Type: application/json
   "password": "Customer123!"
 }
 
-> {%
-     client.global.set("customerToken", response.body.access_token);
-    %}
-
 ### =========================================
-
-### PRUEBAS DE CLIENTE
-
-### (CARTA DESDE QR)
-
+###             PRUEBAS DE CLIENTE
+###              (CARTA DESDE QR)
 ### =========================================
 
 ### 1. [CUSTOMER] Ver la carta pública enlazada desde el QR físico de la Mesa 5
@@ -43,11 +43,8 @@ GET http://localhost:8080/products/menu?table=5
 Accept: application/json
 
 ### =========================================
-
-### PRUEBAS NEGATIVAS RBAC
-
-### (CUSTOMER)
-
+###         PRUEBAS NEGATIVAS
+###            (CUSTOMER)
 ### =========================================
 
 ### 2. [CUSTOMER] No puede consultar el inventario completo de administración
@@ -56,22 +53,15 @@ GET http://localhost:8080/products
 Accept: application/json
 Authorization: Bearer {{customerToken}}
 
-### Resultado esperado: HTTP 403 Forbidden
-
 ### 3. [CUSTOMER] No puede generar códigos QR de mesas
 
 POST http://localhost:8080/qr/table/5
 Accept: image/png
 Authorization: Bearer {{customerToken}}
 
-### Resultado esperado: HTTP 403 Forbidden
-
 ### =========================================
-
-### PEDIDO 1 - PAGO TARJETA
-
-### Y TICKET
-
+###         PEDIDO 1 - PAGO TARJETA
+###                 Y TICKET
 ### =========================================
 
 ### 4. [CUSTOMER] Crear una nueva comanda para pagar con tarjeta
@@ -102,8 +92,6 @@ GET http://localhost:8080/orders/1
 Accept: application/json
 Authorization: Bearer {{customerToken}}
 
-### Resultado esperado: PENDING
-
 ### 6. [CUSTOMER] Pagar el Pedido ID 1 con Tarjeta de Crédito
 
 POST http://localhost:8080/payments/card
@@ -117,15 +105,11 @@ Authorization: Bearer {{customerToken}}
   "transactionId": "txn_stripe_987654321"
 }
 
-### Resultado esperado: paymentStatus COMPLETED y paymentMethod CARD
-
 ### 7. [CUSTOMER] Ver el estado del Pedido ID 1 después de pagar
 
 GET http://localhost:8080/orders/1
 Accept: application/json
 Authorization: Bearer {{customerToken}}
-
-### Resultado esperado: IN_KITCHEN
 
 ### 8. [CUSTOMER] Descargar ticket del Pedido ID 1 pagado con tarjeta
 
@@ -133,12 +117,8 @@ GET http://localhost:8080/payments/ticket/1
 Accept: text/plain
 Authorization: Bearer {{customerToken}}
 
-### Resultado esperado: HTTP 200 y ticket con Payment method CARD
-
 ### =========================================
-
-### PEDIDO 2 - CASH INSUFICIENTE
-
+###     PEDIDO 2 - CASH INSUFICIENTE
 ### =========================================
 
 ### 9. [CUSTOMER] Crear un segundo pedido para probar efectivo insuficiente
@@ -169,21 +149,14 @@ Authorization: Bearer {{customerToken}}
   "cashReceived": 1.00
 }
 
-### Resultado esperado: solicitud rechazada
-
 ### 11. [CUSTOMER] Confirmar que no existe ticket para el Pedido ID 2 no pagado
-
+### */* = acepta cualquier respuesta.(devuelve su excepcion) si ponemos application/json devuelve un internal error 500
 GET http://localhost:8080/payments/ticket/2
-Accept: text/plain
+Accept: */*
 Authorization: Bearer {{customerToken}}
 
-### Resultado esperado: solicitud rechazada
-
-
 ### =========================================
-
-### PEDIDO 3 - CASH PARA CAJA
-
+###      PEDIDO 3 - CASH PARA CAJA
 ### =========================================
 
 ### 12. [CUSTOMER] Crear un tercer pedido para confirmar el pago en efectivo por empleado
@@ -214,20 +187,14 @@ Authorization: Bearer {{customerToken}}
   "cashReceived": 20.00
 }
 
-### Resultado esperado: paymentStatus PENDING y paymentMethod CASH
-
 ### 14. [CUSTOMER] No puede confirmar su propio pago en efectivo
 
 PUT http://localhost:8080/payments/cash/3/confirm
 Accept: application/json
 Authorization: Bearer {{customerToken}}
 
-### Resultado esperado: HTTP 403 Forbidden
-
 ### =========================================
-
-### PEDIDO 4 - PARA COCINA
-
+###         PEDIDO 4 - PARA COCINA
 ### =========================================
 
 ### 15. [CUSTOMER] Crear un cuarto pedido pendiente para que lo gestione el empleado
@@ -287,10 +254,9 @@ Content-Type: application/json
 Authorization: Bearer {{customerToken}}
 
 {
-  "preferences": "Quiero algo variado para compartir, con bebida y sin pescado.",
+  "preferences": "Quiero algo variado para compartir, con bebida muy helada para cada uno y con entrantes, si hay algo dulce recomiendame algo, cafe para despues porfavor.",
   "maxBudget": 35.00,
   "numberOfPeople": 5
 }
-
 
 
