@@ -17,6 +17,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -28,6 +29,12 @@ import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
 
 @Slf4j
 public class CustomAuthorizationFilter extends OncePerRequestFilter {
+
+    private final String jwtSecret;
+
+    public CustomAuthorizationFilter(String jwtSecret) {
+        this.jwtSecret = jwtSecret;
+    }
 
     @Override
     protected void doFilterInternal(
@@ -52,7 +59,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
                 String token = authorizationHeader.substring("Bearer ".length());
 
                 Algorithm algorithm = Algorithm.HMAC256(
-                        "smartqr-super-secret-key-100-montaditos-backend-bootcamp-2026".getBytes()
+                        jwtSecret.getBytes(StandardCharsets.UTF_8)
                 );
 
                 JWTVerifier verifier = JWT.require(algorithm).build();
@@ -68,7 +75,11 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
                 );
 
                 UsernamePasswordAuthenticationToken authenticationToken =
-                        new UsernamePasswordAuthenticationToken(username, null, authorities);
+                        new UsernamePasswordAuthenticationToken(
+                                username,
+                                null,
+                                authorities
+                        );
 
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 

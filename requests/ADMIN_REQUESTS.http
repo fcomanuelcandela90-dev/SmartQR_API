@@ -2,19 +2,18 @@
 ### AUTENTICACIÓN ADMINISTRADOR - ADMIN LOGIN
 ### =========================================
 
-### 0. Login administrador y guardar token JWT automáticamente
+### PEGA AQUI EL TOKEN DEVUELTO POR EL LOGIN:
+@adminToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBzbWFydHFyLmNvbSIsImV4cCI6MTc4MDUzNTkzOSwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL2FwaS9sb2dpbiIsInJvbGVzIjpbIlJPTEVfQURNSU4iXX0.dOo6v3INu8nCCU1Je1QY699slX23FEXPq6ZivM1Twj0
+
+### 0. Login administrador
 
 POST http://localhost:8080/api/login
 Content-Type: application/json
 
 {
-"username": "admin@smartqr.com",
-"password": "Admin123!"
+  "username": "admin@smartqr.com",
+  "password": "Admin123!"
 }
-
-> {%
-client.global.set("adminToken", response.body.access_token);
-%}
 
 ### =========================================
 ###     GENERACIÓN QR - ADMIN
@@ -83,6 +82,15 @@ Authorization: Bearer {{adminToken}}
 GET http://localhost:8080/dashboard/charts/product-sales
 Accept: image/png
 Authorization: Bearer {{adminToken}}
+### =========================================
+###         FEEDBACK ANALYTICS - ADMIN
+### =========================================
+
+### 7. [ADMIN] Consultar estadisticas de feedback analizado por IA OPENAI
+
+GET http://localhost:8080/feedback/statistics
+Accept: application/json
+Authorization: Bearer {{adminToken}}
 
 ### =========================================
 ###         AGENTE LOCAL OLLAMA - ADMIN
@@ -94,7 +102,7 @@ Authorization: Bearer {{adminToken}}
 ###   desde CUSTOMER_REQUESTS.http.
 ### - Este agente es de solo lectura: consulta datos, no modifica nada.
 
-### 7. [ADMIN] Consultar metricas mediante el agente local Ollama
+### 8. [ADMIN] Consultar metricas mediante el agente local Ollama
 
 POST http://localhost:8080/agent/local/ask
 Content-Type: application/json
@@ -104,7 +112,7 @@ Authorization: Bearer {{adminToken}}
   "question": "Resume las ventas actuales del restaurante e indica el producto mas vendido."
 }
 
-### 8. [ADMIN] Consultar la cola de cocina mediante el agente local Ollama
+### 9. [ADMIN] Consultar la cola de cocina mediante LLM
 
 POST http://localhost:8080/agent/local/ask
 Content-Type: application/json
@@ -114,7 +122,7 @@ Authorization: Bearer {{adminToken}}
   "question": "Cuantos pedidos hay actualmente pendientes o en cocina? Resume la carga de trabajo."
 }
 
-### 9. [ADMIN] Consultar productos disponibles mediante el agente local Ollama
+### 10. [ADMIN] Consultar productos disponibles LLM
 
 POST http://localhost:8080/agent/local/ask
 Content-Type: application/json
@@ -124,7 +132,7 @@ Authorization: Bearer {{adminToken}}
   "question": "Que productos hay disponibles actualmente en el menu? Dame un resumen breve."
 }
 
-### 10. [ADMIN] Verificar que el agente local no modifica datos
+### 11. [ADMIN] Verificar que el agente local no modifica datos
 
 POST http://localhost:8080/agent/local/ask
 Content-Type: application/json
@@ -143,7 +151,7 @@ Authorization: Bearer {{adminToken}}
 ### - Para que las metricas contengan ventas, ejecutar antes un pago completado
 ###   desde CUSTOMER_REQUESTS.http.
 
-### 11. [ADMIN] Inicializar cliente MCP contra el servidor SmartQR
+### 12. [ADMIN] Inicializar cliente MCP contra el servidor SmartQR
 
 POST http://localhost:8080/mcp
 Content-Type: application/json
@@ -164,7 +172,7 @@ Authorization: Bearer {{adminToken}}
   }
 }
 
-### 12. [ADMIN] Notificar que el cliente MCP ha finalizado la inicializacion
+### 13. [ADMIN] Notificar que el cliente MCP ha finalizado la inicializacion
 
 POST http://localhost:8080/mcp
 Content-Type: application/json
@@ -176,7 +184,7 @@ Authorization: Bearer {{adminToken}}
   "method": "notifications/initialized"
 }
 
-### 13. [ADMIN] Listar herramientas publicadas por el servidor MCP
+### 14. [ADMIN] Listar herramientas publicadas por el servidor MCP
 
 POST http://localhost:8080/mcp
 Content-Type: application/json
@@ -190,7 +198,7 @@ Authorization: Bearer {{adminToken}}
   "params": {}
 }
 
-### 14. [ADMIN] Ejecutar herramienta MCP de metricas de ventas
+### 15. [ADMIN] Ejecutar herramienta MCP de metricas de ventas
 
 POST http://localhost:8080/mcp
 Content-Type: application/json
@@ -207,7 +215,7 @@ Authorization: Bearer {{adminToken}}
   }
 }
 
-### 15. [ADMIN] Ejecutar herramienta MCP de cola de cocina
+### 16. [ADMIN] Ejecutar herramienta MCP de cola de cocina
 
 POST http://localhost:8080/mcp
 Content-Type: application/json
@@ -224,7 +232,7 @@ Authorization: Bearer {{adminToken}}
   }
 }
 
-### 16. [ADMIN] Ejecutar herramienta MCP de menu disponible
+### 17. [ADMIN] Ejecutar herramienta MCP de menu disponible
 
 POST http://localhost:8080/mcp
 Content-Type: application/json
@@ -240,15 +248,3 @@ Authorization: Bearer {{adminToken}}
     "arguments": {}
   }
 }
-
-### =========================================
-###         FEEDBACK ANALYTICS - ADMIN
-### =========================================
-
-### 17. [ADMIN] Consultar estadisticas de feedback analizado por IA
-
-GET http://localhost:8080/feedback/statistics
-Accept: application/json
-Authorization: Bearer {{adminToken}}
-
-

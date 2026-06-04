@@ -13,17 +13,23 @@
 @otherEmail = exception.other@smartqr.com
 @testPassword = Validation123!
 
+### VARIABLES MANUALES DE ESTA PRUEBA
+### Ejecuta la petición indicada y copia el valor devuelto aquí arriba.
+@validationProductId = PEGA_AQUI_ID_PRODUCTO_DEL_PASO_0
+@ownerValidationToken = PEGA_AQUI_TOKEN_CUSTOMER_DEL_PASO_3
+@cashValidationOrderId = PEGA_AQUI_ORDER_ID_DEL_PASO_5
+@paidValidationOrderId = PEGA_AQUI_ORDER_ID_DEL_PASO_8
+@otherValidationToken = PEGA_AQUI_TOKEN_SEGUNDO_CUSTOMER_DEL_PASO_15
+@adminValidationToken = PEGA_AQUI_TOKEN_ADMIN_DEL_PASO_20
+
 ### =========================================
 ### A. DATOS BASE Y CUSTOMER PROPIETARIO
 ### =========================================
 
-### 0. Obtener menu publico y guardar un producto real
+### 0. Obtener menu publico
+### Copia el id de un producto disponible en @validationProductId.
 GET {{baseUrl}}/products/menu
 Accept: application/json
-
-> {%
-client.global.set("validationProductId", response.body[0].id);
-%}
 
 ### Resultado esperado:
 ### HTTP 200 OK
@@ -58,7 +64,8 @@ Content-Type: application/json
 ### message: Cannot register user: this email is already in use.
 
 
-### 3. Login customer propietario y guardar token
+### 3. Login customer propietario
+### Copia access_token en @ownerValidationToken.
 POST {{baseUrl}}/api/login
 Content-Type: application/json
 
@@ -66,10 +73,6 @@ Content-Type: application/json
   "username": "{{ownerEmail}}",
   "password": "{{testPassword}}"
 }
-
-> {%
-client.global.set("ownerValidationToken", response.body.access_token);
-%}
 
 ### Resultado esperado:
 ### HTTP 200 OK
@@ -101,6 +104,7 @@ Authorization: Bearer {{ownerValidationToken}}
 
 
 ### 5. Crear pedido valido para probar cash insuficiente
+### Copia orderId en @cashValidationOrderId.
 POST {{baseUrl}}/orders
 Content-Type: application/json
 Authorization: Bearer {{ownerValidationToken}}
@@ -115,10 +119,6 @@ Authorization: Bearer {{ownerValidationToken}}
     }
   ]
 }
-
-> {%
-client.global.set("cashValidationOrderId", response.body.orderId);
-%}
 
 ### Resultado esperado:
 ### HTTP 201 Created
@@ -151,6 +151,7 @@ Authorization: Bearer {{ownerValidationToken}}
 
 
 ### 8. Crear pedido valido para probar pago repetido
+### Copia orderId en @paidValidationOrderId.
 POST {{baseUrl}}/orders
 Content-Type: application/json
 Authorization: Bearer {{ownerValidationToken}}
@@ -165,10 +166,6 @@ Authorization: Bearer {{ownerValidationToken}}
     }
   ]
 }
-
-> {%
-client.global.set("paidValidationOrderId", response.body.orderId);
-%}
 
 ### Resultado esperado:
 ### HTTP 201 Created
@@ -275,7 +272,8 @@ Content-Type: application/json
 ### HTTP 201 Created
 
 
-### 15. Login segundo customer y guardar token
+### 15. Login segundo customer
+### Copia access_token en @otherValidationToken.
 POST {{baseUrl}}/api/login
 Content-Type: application/json
 
@@ -283,10 +281,6 @@ Content-Type: application/json
   "username": "{{otherEmail}}",
   "password": "{{testPassword}}"
 }
-
-> {%
-client.global.set("otherValidationToken", response.body.access_token);
-%}
 
 ### Resultado esperado:
 ### HTTP 200 OK
@@ -347,7 +341,8 @@ Authorization: Bearer {{ownerValidationToken}}
 ### E. ADMIN - VALIDACION DE RECURSO Y DTO LOCAL
 ### =========================================
 
-### 20. Login administrador y guardar token
+### 20. Login administrador
+### Copia access_token en @adminValidationToken.
 POST {{baseUrl}}/api/login
 Content-Type: application/json
 
@@ -355,10 +350,6 @@ Content-Type: application/json
   "username": "admin@smartqr.com",
   "password": "Admin123!"
 }
-
-> {%
-client.global.set("adminValidationToken", response.body.access_token);
-%}
 
 ### Resultado esperado:
 ### HTTP 200 OK
