@@ -19,7 +19,6 @@ public class PaymentController {
 
     private final PaymentService paymentService;
 
-    // POST: Process a card payment requested by the customer who owns the order
     @PostMapping("/card")
     @ResponseStatus(HttpStatus.CREATED)
     public PaymentResponse processCardPayment(
@@ -29,7 +28,6 @@ public class PaymentController {
         return paymentService.processCardPayment(authentication.getName(), request);
     }
 
-    // POST: Request a cash payment for an order owned by the authenticated customer
     @PostMapping("/cash/request")
     @ResponseStatus(HttpStatus.CREATED)
     public PaymentResponse requestCashPayment(
@@ -39,14 +37,12 @@ public class PaymentController {
         return paymentService.requestCashPayment(authentication.getName(), request);
     }
 
-    // PUT: Confirm a cash payment by internal staff
     @PutMapping("/cash/{orderId}/confirm")
     @ResponseStatus(HttpStatus.OK)
     public PaymentResponse confirmCashPayment(@PathVariable Long orderId) {
         return paymentService.confirmCashPayment(orderId);
     }
 
-    // GET: Generate printable ticket for the owner customer or internal staff
     @GetMapping(value = "/ticket/{orderId}", produces = MediaType.TEXT_PLAIN_VALUE)
     @ResponseStatus(HttpStatus.OK)
     public String generatePrintableTicket(

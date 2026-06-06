@@ -3,7 +3,7 @@
 ### En una aplicación web real, el frontend enviaría automáticamente el orderId devuelto al crear cada pedido.
 
 ### PEGA AQUI EL TOKEN DEVUELTO POR EL LOGIN (0.1):
-@customerToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmcmFuLmN1c3RvbWVyQHNtYXJ0cXIuY29tIiwiZXhwIjoxNzgwNTM1MzQ0LCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODAvYXBpL2xvZ2luIiwicm9sZXMiOlsiUk9MRV9DVVNUT01FUiJdfQ.b0HX4W5Sd06E99SCzI9QVRjzroaQdbTjQqBejYZ2Akk
+@customerToken =
 
 ### =========================================
 ### AUTENTICACIÓN CLIENTE - CUSTOMER

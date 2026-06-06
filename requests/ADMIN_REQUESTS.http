@@ -3,8 +3,7 @@
 ### =========================================
 
 ### PEGA AQUI EL TOKEN DEVUELTO POR EL LOGIN:
-@adminToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBzbWFydHFyLmNvbSIsImV4cCI6MTc4MDUzNTkzOSwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL2FwaS9sb2dpbiIsInJvbGVzIjpbIlJPTEVfQURNSU4iXX0.dOo6v3INu8nCCU1Je1QY699slX23FEXPq6ZivM1Twj0
-
+@adminToken =
 ### 0. Login administrador
 
 POST http://localhost:8080/api/login

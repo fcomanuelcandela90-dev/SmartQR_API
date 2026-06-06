@@ -3,7 +3,7 @@
 ### Pedido ID 4: pedido PENDING que el empleado gestiona en cocina.
 
 ### PEGAR AQUI EL TOKEN DEVUELTO POR EL LOGIN(0):
-@employeeToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJlbXBsb3llZUBzbWFydHFyLmNvbSIsImV4cCI6MTc4MDUzNTc0MSwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL2FwaS9sb2dpbiIsInJvbGVzIjpbIlJPTEVfRU1QTE9ZRUUiXX0.C6KCogpDD-jykhc_Q_WwwCEB7_FCffSKH-TH6ZmV5UY
+@employeeToken =
 
 ### =========================================
 ###          EMPLOYEE LOGIN

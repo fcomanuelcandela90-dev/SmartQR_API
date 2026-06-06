@@ -1,0 +1,711 @@
+### ============================================================
+### SMARTQR API - DEMO TOTAL FINAL
+### Base recomendada: base de datos limpia.
+###
+### Objetivo:
+### - Crear 5 pedidos variados.
+### - 4 pedidos terminan DELIVERED.
+### - 1 pedido falla por cash insuficiente y se cancela.
+### - Al final ADMIN ve dashboard, charts, feedback statistics,
+###   agente local Ollama y MCP tools.
+###
+### IMPORTANTE:
+### 1. Ejecuta primero los login.
+### 2. Copia cada access_token en las variables de abajo.
+### 3. Si la base no está limpia, cambia los orderId manualmente.
+### ============================================================
+
+@baseUrl = http://localhost:8080
+
+@customerToken =
+@employeeToken =
+@adminToken =
+
+@order1Id = 1
+@order2Id = 2
+@order3Id = 3
+@order4Id = 4
+@order5Id = 5
+
+
+### ============================================================
+### 0. LOGIN Y DATOS BASE
+### ============================================================
+
+### 0.1 Registrar customer de demo
+### Si devuelve 409 porque ya existe, no pasa nada: ejecuta login.
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "name": "Demo Total Customer",
+  "email": "demo.total.customer@smartqr.com",
+  "password": "Customer123!"
+}
+
+
+### 0.2 Login CUSTOMER
+### Copiar access_token en @customerToken.
+POST {{baseUrl}}/api/login
+Content-Type: application/json
+
+{
+  "username": "demo.total.customer@smartqr.com",
+  "password": "Customer123!"
+}
+
+
+### 0.3 Login EMPLOYEE
+### Copiar access_token en @employeeToken.
+POST {{baseUrl}}/api/login
+Content-Type: application/json
+
+{
+  "username": "employee@smartqr.com",
+  "password": "Employee123!"
+}
+
+
+### 0.4 Login ADMIN
+### Copiar access_token en @adminToken.
+POST {{baseUrl}}/api/login
+Content-Type: application/json
+
+{
+  "username": "admin@smartqr.com",
+  "password": "Admin123!"
+}
+
+
+### 0.5 Ver menú público desde QR de mesa 5
+GET {{baseUrl}}/products/menu?table=5
+Accept: application/json
+
+
+### ============================================================
+### PEDIDO 1 - VARIADO / CASH / DELIVERED
+### Patatas, nachos, montaditos y cerveza.
+### ============================================================
+
+### 1.1 CUSTOMER crea Pedido 1
+POST {{baseUrl}}/orders
+Content-Type: application/json
+Authorization: Bearer {{customerToken}}
+
+{
+  "tableNumber": 5,
+  "items": [
+    {
+      "productId": 11,
+      "quantity": 2,
+      "notes": "Bravas para compartir"
+    },
+    {
+      "productId": 13,
+      "quantity": 1,
+      "notes": "Nachos con bastante queso"
+    },
+    {
+      "productId": 16,
+      "quantity": 3,
+      "notes": "Montaditos variados"
+    },
+    {
+      "productId": 1,
+      "quantity": 2,
+      "notes": "Jarras muy frias"
+    }
+  ]
+}
+
+
+### 1.2 CUSTOMER consulta Pedido 1
+GET {{baseUrl}}/orders/{{order1Id}}
+Accept: application/json
+Authorization: Bearer {{customerToken}}
+
+
+### 1.3 CUSTOMER solicita pago en efectivo para Pedido 1
+POST {{baseUrl}}/payments/cash/request
+Content-Type: application/json
+Authorization: Bearer {{customerToken}}
+
+{
+  "orderId": {{order1Id}},
+  "cashReceived": 25.00
+}
+
+
+### 1.4 EMPLOYEE confirma efectivo Pedido 1
+PUT {{baseUrl}}/payments/cash/{{order1Id}}/confirm
+Accept: application/json
+Authorization: Bearer {{employeeToken}}
+
+
+### 1.5 EMPLOYEE pasa Pedido 1 a IN_KITCHEN
+PATCH {{baseUrl}}/orders/{{order1Id}}/status?status=IN_KITCHEN
+Accept: application/json
+Authorization: Bearer {{employeeToken}}
+
+
+### 1.6 EMPLOYEE pasa Pedido 1 a READY
+PATCH {{baseUrl}}/orders/{{order1Id}}/status?status=READY
+Accept: application/json
+Authorization: Bearer {{employeeToken}}
+
+
+### 1.7 EMPLOYEE pasa Pedido 1 a DELIVERED
+PATCH {{baseUrl}}/orders/{{order1Id}}/status?status=DELIVERED
+Accept: application/json
+Authorization: Bearer {{employeeToken}}
+
+
+### 1.8 CUSTOMER descarga ticket Pedido 1
+GET {{baseUrl}}/payments/ticket/{{order1Id}}
+Accept: text/plain
+Authorization: Bearer {{customerToken}}
+
+
+### 1.9 CUSTOMER deja feedback Pedido 1
+POST {{baseUrl}}/feedback
+Content-Type: application/json
+Authorization: Bearer {{customerToken}}
+
+{
+  "orderId": {{order1Id}},
+  "rating": 5,
+  "comment": "Todo muy bien. Las bravas estaban buenas, las bebidas llegaron frias y el servicio fue bastante rapido."
+}
+
+
+### 1.10 CUSTOMER pide recomendación IA para próxima ronda
+POST {{baseUrl}}/ai/combo-recommendation
+Content-Type: application/json
+Authorization: Bearer {{customerToken}}
+
+{
+  "preferences": "Queremos algo variado para compartir, con entrantes, montaditos y bebidas frias. Si entra algo dulce o cafe, mejor.",
+  "maxBudget": 45.00,
+  "numberOfPeople": 5
+}
+
+
+### ============================================================
+### PEDIDO 2 - DIFERENTE / CARD / DELIVERED
+### Ensalada, montaditos de pollo, refrescos y cafés.
+### Nota: al pagar con tarjeta el pedido pasa a cocina automáticamente.
+### ============================================================
+
+### 2.1 CUSTOMER crea Pedido 2
+POST {{baseUrl}}/orders
+Content-Type: application/json
+Authorization: Bearer {{customerToken}}
+
+{
+  "tableNumber": 5,
+  "items": [
+    {
+      "productId": 14,
+      "quantity": 1,
+      "notes": "Ensalada para compartir"
+    },
+    {
+      "productId": 21,
+      "quantity": 2,
+      "notes": "Montaditos de pollo"
+    },
+    {
+      "productId": 4,
+      "quantity": 2,
+      "notes": "Refrescos muy frios"
+    },
+    {
+      "productId": 10,
+      "quantity": 2,
+      "notes": "Cafe para despues"
+    }
+  ]
+}
+
+
+### 2.2 CUSTOMER paga Pedido 2 con tarjeta
+POST {{baseUrl}}/payments/card
+Content-Type: application/json
+Authorization: Bearer {{customerToken}}
+
+{
+  "orderId": {{order2Id}},
+  "cardHolderName": "Demo Total Customer",
+  "last4Digits": "4242",
+  "transactionId": "txn_demo_total_order_2"
+}
+
+
+### 2.3 EMPLOYEE consulta cola de cocina
+GET {{baseUrl}}/orders/kitchen/queue
+Accept: application/json
+Authorization: Bearer {{employeeToken}}
+
+
+### 2.4 EMPLOYEE pasa Pedido 2 a READY
+PATCH {{baseUrl}}/orders/{{order2Id}}/status?status=READY
+Accept: application/json
+Authorization: Bearer {{employeeToken}}
+
+
+### 2.5 EMPLOYEE pasa Pedido 2 a DELIVERED
+PATCH {{baseUrl}}/orders/{{order2Id}}/status?status=DELIVERED
+Accept: application/json
+Authorization: Bearer {{employeeToken}}
+
+
+### 2.6 CUSTOMER descarga ticket Pedido 2
+GET {{baseUrl}}/payments/ticket/{{order2Id}}
+Accept: text/plain
+Authorization: Bearer {{customerToken}}
+
+
+### 2.7 CUSTOMER deja feedback Pedido 2
+POST {{baseUrl}}/feedback
+Content-Type: application/json
+Authorization: Bearer {{customerToken}}
+
+{
+  "orderId": {{order2Id}},
+  "rating": 4,
+  "comment": "La comida estuvo bien y los montaditos salieron rapido. El unico detalle es que uno de los refrescos podria haber estado mas frio."
+}
+
+
+### 2.8 CUSTOMER pide recomendación IA ligera
+POST {{baseUrl}}/ai/combo-recommendation
+Content-Type: application/json
+Authorization: Bearer {{customerToken}}
+
+{
+  "preferences": "Queremos una opcion ligera con ensalada, alguna bebida sin alcohol y un par de montaditos.",
+  "maxBudget": 28.00,
+  "numberOfPeople": 2
+}
+
+
+### ============================================================
+### PEDIDO 3 - CASH / CAMBIO DE ARTICULOS POR EMPLOYEE / DELIVERED
+### El empleado modifica items mientras el pedido sigue PENDING.
+### ============================================================
+
+### 3.1 CUSTOMER crea Pedido 3
+POST {{baseUrl}}/orders
+Content-Type: application/json
+Authorization: Bearer {{customerToken}}
+
+{
+  "tableNumber": 5,
+  "items": [
+    {
+      "productId": 17,
+      "quantity": 2,
+      "notes": "Pedido inicial antes del cambio"
+    },
+    {
+      "productId": 6,
+      "quantity": 2,
+      "notes": "Agua para la mesa"
+    }
+  ]
+}
+
+
+### 3.2 EMPLOYEE modifica articulos del Pedido 3 mientras está PENDING
+PUT {{baseUrl}}/orders/{{order3Id}}/items
+Content-Type: application/json
+Authorization: Bearer {{employeeToken}}
+
+[
+  {
+    "productId": 20,
+    "quantity": 2,
+    "notes": "Cambio a montadito campero"
+  },
+  {
+    "productId": 11,
+    "quantity": 1,
+    "notes": "Añadimos una racion de bravas"
+  },
+  {
+    "productId": 3,
+    "quantity": 2,
+    "notes": "Dos tintos de verano"
+  }
+]
+
+
+### 3.3 CUSTOMER consulta Pedido 3 tras modificación
+GET {{baseUrl}}/orders/{{order3Id}}
+Accept: application/json
+Authorization: Bearer {{customerToken}}
+
+
+### 3.4 CUSTOMER solicita pago en efectivo Pedido 3
+POST {{baseUrl}}/payments/cash/request
+Content-Type: application/json
+Authorization: Bearer {{customerToken}}
+
+{
+  "orderId": {{order3Id}},
+  "cashReceived": 20.00
+}
+
+
+### 3.5 EMPLOYEE confirma efectivo Pedido 3
+PUT {{baseUrl}}/payments/cash/{{order3Id}}/confirm
+Accept: application/json
+Authorization: Bearer {{employeeToken}}
+
+
+### 3.6 EMPLOYEE pasa Pedido 3 a IN_KITCHEN
+PATCH {{baseUrl}}/orders/{{order3Id}}/status?status=IN_KITCHEN
+Accept: application/json
+Authorization: Bearer {{employeeToken}}
+
+
+### 3.7 EMPLOYEE pasa Pedido 3 a READY
+PATCH {{baseUrl}}/orders/{{order3Id}}/status?status=READY
+Accept: application/json
+Authorization: Bearer {{employeeToken}}
+
+
+### 3.8 EMPLOYEE pasa Pedido 3 a DELIVERED
+PATCH {{baseUrl}}/orders/{{order3Id}}/status?status=DELIVERED
+Accept: application/json
+Authorization: Bearer {{employeeToken}}
+
+
+### 3.9 CUSTOMER descarga ticket Pedido 3
+GET {{baseUrl}}/payments/ticket/{{order3Id}}
+Accept: text/plain
+Authorization: Bearer {{customerToken}}
+
+
+### 3.10 CUSTOMER deja feedback Pedido 3
+POST {{baseUrl}}/feedback
+Content-Type: application/json
+Authorization: Bearer {{customerToken}}
+
+{
+  "orderId": {{order3Id}},
+  "rating": 5,
+  "comment": "El cambio de articulos fue un acierto. El empleado nos lo resolvio rapido y el pedido llego perfecto."
+}
+
+
+### 3.11 CUSTOMER pide recomendación IA para cena barata
+POST {{baseUrl}}/ai/combo-recommendation
+Content-Type: application/json
+Authorization: Bearer {{customerToken}}
+
+{
+  "preferences": "Busco algo economico con dos bebidas, una racion para compartir y montaditos variados.",
+  "maxBudget": 25.00,
+  "numberOfPeople": 2
+}
+
+
+### ============================================================
+### PEDIDO 4 - CARD / DELIVERED
+### Pedido distinto: ensalada vegana, caprese, zumos y cafés.
+### ============================================================
+
+### 4.1 CUSTOMER crea Pedido 4
+POST {{baseUrl}}/orders
+Content-Type: application/json
+Authorization: Bearer {{customerToken}}
+
+{
+  "tableNumber": 5,
+  "items": [
+    {
+      "productId": 15,
+      "quantity": 1,
+      "notes": "Opcion vegana"
+    },
+    {
+      "productId": 27,
+      "quantity": 2,
+      "notes": "Montaditos caprese"
+    },
+    {
+      "productId": 7,
+      "quantity": 2,
+      "notes": "Zumos frios"
+    },
+    {
+      "productId": 10,
+      "quantity": 2,
+      "notes": "Cafe despues"
+    }
+  ]
+}
+
+
+### 4.2 CUSTOMER paga Pedido 4 con tarjeta
+POST {{baseUrl}}/payments/card
+Content-Type: application/json
+Authorization: Bearer {{customerToken}}
+
+{
+  "orderId": {{order4Id}},
+  "cardHolderName": "Demo Total Customer",
+  "last4Digits": "1111",
+  "transactionId": "txn_demo_total_order_4"
+}
+
+
+### 4.3 EMPLOYEE pasa Pedido 4 a READY
+PATCH {{baseUrl}}/orders/{{order4Id}}/status?status=READY
+Accept: application/json
+Authorization: Bearer {{employeeToken}}
+
+
+### 4.4 EMPLOYEE pasa Pedido 4 a DELIVERED
+PATCH {{baseUrl}}/orders/{{order4Id}}/status?status=DELIVERED
+Accept: application/json
+Authorization: Bearer {{employeeToken}}
+
+
+### 4.5 CUSTOMER descarga ticket Pedido 4
+GET {{baseUrl}}/payments/ticket/{{order4Id}}
+Accept: text/plain
+Authorization: Bearer {{customerToken}}
+
+
+### 4.6 CUSTOMER deja feedback Pedido 4
+POST {{baseUrl}}/feedback
+Content-Type: application/json
+Authorization: Bearer {{customerToken}}
+
+{
+  "orderId": {{order4Id}},
+  "rating": 3,
+  "comment": "El pedido estaba correcto, pero tardo algo mas de lo esperado. La comida estaba buena, aunque el servicio podria mejorar."
+}
+
+
+### 4.7 CUSTOMER pide recomendación IA vegetariana
+POST {{baseUrl}}/ai/combo-recommendation
+Content-Type: application/json
+Authorization: Bearer {{customerToken}}
+
+{
+  "preferences": "Queremos una opcion vegetariana o ligera, con bebida sin alcohol y algo para compartir.",
+  "maxBudget": 30.00,
+  "numberOfPeople": 3
+}
+
+
+### ============================================================
+### PEDIDO 5 - CASH INVALIDO / CANCELADO POR EMPLOYEE
+### Este pedido NO debe contar como venta completada.
+### ============================================================
+
+### 5.1 CUSTOMER crea Pedido 5
+POST {{baseUrl}}/orders
+Content-Type: application/json
+Authorization: Bearer {{customerToken}}
+
+{
+  "tableNumber": 5,
+  "items": [
+    {
+      "productId": 28,
+      "quantity": 2,
+      "notes": "Pedido que se cancelara por cash invalido"
+    },
+    {
+      "productId": 9,
+      "quantity": 1,
+      "notes": "Bebida energetica"
+    }
+  ]
+}
+
+
+### 5.2 CUSTOMER intenta pagar Pedido 5 con efectivo insuficiente
+### Resultado esperado: 400 Bad Request.
+POST {{baseUrl}}/payments/cash/request
+Content-Type: application/json
+Authorization: Bearer {{customerToken}}
+
+{
+  "orderId": {{order5Id}},
+  "cashReceived": 1.00
+}
+
+
+### 5.3 EMPLOYEE cancela Pedido 5 porque el pago no se completa
+PUT {{baseUrl}}/orders/{{order5Id}}/cancel
+Accept: application/json
+Authorization: Bearer {{employeeToken}}
+
+
+### 5.4 CUSTOMER consulta Pedido 5 cancelado
+GET {{baseUrl}}/orders/{{order5Id}}
+Accept: application/json
+Authorization: Bearer {{customerToken}}
+
+
+### 5.5 CUSTOMER intenta descargar ticket del Pedido 5 cancelado
+### Resultado esperado: error porque no hay pago completado.
+GET {{baseUrl}}/payments/ticket/{{order5Id}}
+Accept: */*
+Authorization: Bearer {{customerToken}}
+
+
+### ============================================================
+### VISION EMPLOYEE DESPUES DE LOS PEDIDOS
+### ============================================================
+
+### E.1 EMPLOYEE consulta pedidos de la mesa 5
+GET {{baseUrl}}/orders/table/5
+Accept: application/json
+Authorization: Bearer {{employeeToken}}
+
+
+### E.2 EMPLOYEE consulta cola de cocina
+GET {{baseUrl}}/orders/kitchen/queue
+Accept: application/json
+Authorization: Bearer {{employeeToken}}
+
+
+### ============================================================
+### ADMIN - DASHBOARD, CHARTS, FEEDBACK, OLLAMA Y MCP
+### ============================================================
+
+### A.1 ADMIN ve todos los productos
+GET {{baseUrl}}/products
+Accept: application/json
+Authorization: Bearer {{adminToken}}
+
+
+### A.2 ADMIN consulta metricas del dashboard
+GET {{baseUrl}}/dashboard/metrics
+Accept: application/json
+Authorization: Bearer {{adminToken}}
+
+
+### A.3 ADMIN genera chart de ingresos por metodo de pago
+GET {{baseUrl}}/dashboard/charts/income-by-payment-method
+Accept: image/png
+Authorization: Bearer {{adminToken}}
+
+
+### A.4 ADMIN genera chart de productos vendidos
+GET {{baseUrl}}/dashboard/charts/product-sales
+Accept: image/png
+Authorization: Bearer {{adminToken}}
+
+
+### A.5 ADMIN consulta estadisticas de feedback
+GET {{baseUrl}}/feedback/statistics
+Accept: application/json
+Authorization: Bearer {{adminToken}}
+
+
+### A.6 ADMIN pregunta al agente local por ventas y producto mas vendido
+POST {{baseUrl}}/agent/local/ask
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+{
+  "question": "Resume las ventas actuales del restaurante. Indica los pedidos completados, el total aproximado y el producto mas vendido si aparece en las metricas."
+}
+
+
+### A.7 ADMIN pregunta al agente local por feedbacks
+POST {{baseUrl}}/agent/local/ask
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+{
+  "question": "Resume las opiniones de los clientes. Dime si predominan comentarios positivos, neutros o negativos y que mejora se podria aplicar."
+}
+
+### A.8 ADMIN comprueba que el agente local no modifica datos
+POST {{baseUrl}}/agent/local/ask
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+{
+  "question": "Cancela todos los pedidos pendientes y elimina los productos no disponibles."
+}
+
+
+### ============================================================
+### MCP - TOOLS DE SOLO LECTURA
+### No ejecutar POST /mcp vacio.
+### Estas llamadas deben devolver tools o resultados de tools.
+### ============================================================
+
+### MCP.1 Listar tools publicadas por el servidor MCP
+POST {{baseUrl}}/mcp
+Content-Type: application/json
+Accept: application/json, text/event-stream
+Authorization: Bearer {{adminToken}}
+
+{
+  "jsonrpc": "2.0",
+  "id": 102,
+  "method": "tools/list",
+  "params": {}
+}
+
+
+### MCP.2 Ejecutar tool MCP de metricas de ventas
+POST {{baseUrl}}/mcp
+Content-Type: application/json
+Accept: application/json, text/event-stream
+Authorization: Bearer {{adminToken}}
+
+{
+  "jsonrpc": "2.0",
+  "id": 103,
+  "method": "tools/call",
+  "params": {
+    "name": "get_sales_metrics",
+    "arguments": {}
+  }
+}
+
+
+### MCP.3 Ejecutar tool MCP de cola de cocina
+POST {{baseUrl}}/mcp
+Content-Type: application/json
+Accept: application/json, text/event-stream
+Authorization: Bearer {{adminToken}}
+
+{
+  "jsonrpc": "2.0",
+  "id": 104,
+  "method": "tools/call",
+  "params": {
+    "name": "get_kitchen_queue",
+    "arguments": {}
+  }
+}
+
+
+### MCP.4 Ejecutar tool MCP de menu disponible
+POST {{baseUrl}}/mcp
+Content-Type: application/json
+Accept: application/json, text/event-stream
+Authorization: Bearer {{adminToken}}
+
+{
+  "jsonrpc": "2.0",
+  "id": 105,
+  "method": "tools/call",
+  "params": {
+    "name": "get_available_menu",
+    "arguments": {}
+  }
+}

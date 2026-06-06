@@ -37,3 +37,4 @@ requests/table_qr/
 
 # Generated dashboard chart images during local tests
 requests/charts/
+/docs/GUIA_PRESENTACION_SMARTQR.md

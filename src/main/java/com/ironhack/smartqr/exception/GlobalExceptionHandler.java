@@ -126,10 +126,6 @@ public class GlobalExceptionHandler {
         );
     }
 
-    /*
-     * Temporary handlers while existing services are migrated
-     * to the custom exceptions created in this phase.
-     */
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleIllegalArgumentException(

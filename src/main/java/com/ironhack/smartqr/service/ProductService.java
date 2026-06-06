@@ -89,7 +89,6 @@ public class ProductService {
         return outOfStockList;
     }
 
-    // Método auxiliar para no repetir código
     private ProductResponse mapToResponse(Product product) {
         return new ProductResponse(
                 product.getId(),
