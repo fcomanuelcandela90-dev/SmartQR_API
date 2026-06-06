@@ -1,14 +1,8 @@
-### DEMO FINAL CON BASE DE DATOS LIMPIA:
-### Este archivo crea los pedidos en orden; por eso las pruebas utilizan IDs 1, 2, 3 y 4.
-### En una aplicación web real, el frontend enviaría automáticamente el orderId devuelto al crear cada pedido.
-
-### PEGA AQUI EL TOKEN DEVUELTO POR EL LOGIN (0.1):
-@customerToken =
-
 ### =========================================
 ### AUTENTICACIÓN CLIENTE - CUSTOMER
 ### =========================================
 
+@customerToken =
 
 ### 0. [CUSTOMER] Registrar nuevo cliente
 
@@ -22,7 +16,6 @@ Content-Type: application/json
 }
 
 ### 0.1 [CUSTOMER] Login cliente
-### Tras ejecutar esta petición, copia access_token en @customerToken de la cabecera.
 
 POST http://localhost:8080/api/login
 Content-Type: application/json

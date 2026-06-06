@@ -29,10 +29,6 @@ POST http://localhost:8080/qr/table/6
 Accept: image/png
 Authorization: Bearer {{employeeToken}}
 
-### Resultado esperado: HTTP 201 Created
-
-### Archivo generado: requests/table_qr/table-6-qr.png
-
 ### =========================================
 ###         PRUEBAS DE PRODUCTOS
 ###             (EMPLOYEE)

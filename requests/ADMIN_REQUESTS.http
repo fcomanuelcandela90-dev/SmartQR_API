@@ -2,7 +2,6 @@
 ### AUTENTICACIÓN ADMINISTRADOR - ADMIN LOGIN
 ### =========================================
 
-### PEGA AQUI EL TOKEN DEVUELTO POR EL LOGIN:
 @adminToken =
 ### 0. Login administrador
 
@@ -17,7 +16,6 @@ Content-Type: application/json
 ### =========================================
 ###     GENERACIÓN QR - ADMIN
 ### =========================================
-### Generar y guardar QR para la Mesa 5
 
 POST http://localhost:8080/qr/table/5
 Accept: image/png
@@ -66,8 +64,7 @@ Authorization: Bearer {{adminToken}}
 ### =========================================
 
 ### 5. [ADMIN] Generar grafico de ingresos por metodo de pago
-### El endpoint devuelve la imagen PNG y tambien la guarda localmente en:
-### requests/charts/income-by-payment-method.png
+
 
 GET http://localhost:8080/dashboard/charts/income-by-payment-method
 Accept: image/png
@@ -75,8 +72,7 @@ Authorization: Bearer {{adminToken}}
 
 
 ### 6. [ADMIN] Generar grafico de productos vendidos
-### El endpoint devuelve la imagen PNG y tambien la guarda localmente en:
-### requests/charts/product-sales.png
+
 
 GET http://localhost:8080/dashboard/charts/product-sales
 Accept: image/png
@@ -94,12 +90,6 @@ Authorization: Bearer {{adminToken}}
 ### =========================================
 ###         AGENTE LOCAL OLLAMA - ADMIN
 ### =========================================
-### IMPORTANTE:
-### - Ollama debe estar ejecutandose en local.
-### - Modelo usado: qwen3:4b.
-### - Para obtener metricas con ventas, ejecutar antes un pago completado
-###   desde CUSTOMER_REQUESTS.http.
-### - Este agente es de solo lectura: consulta datos, no modifica nada.
 
 ### 8. [ADMIN] Consultar metricas mediante el agente local Ollama
 
@@ -170,17 +160,12 @@ Content-Type: application/json
 Authorization: Bearer {{adminToken}}
 
 {
-  "conversationId": "demo-admin-memory",
+  "conversationId": "chat-admin",
   "question": "Cancela todos los pedidos pendientes y elimina los productos que no se vendan."
 }
 ### =========================================
 ###         MCP SERVER - ADMIN TOOLS
 ### =========================================
-### - Estas peticiones validan MCP real sobre HTTP.
-### - El servidor MCP expone solo herramientas internas de solo lectura.
-### - El token de ADMIN se obtiene ejecutando primero el login del paso 0.
-### - Para que las metricas contengan ventas, ejecutar antes un pago completado
-###   desde CUSTOMER_REQUESTS.http.
 
 ### 12. [ADMIN] Inicializar cliente MCP contra el servidor SmartQR
 

@@ -73,7 +73,6 @@ Accept: application/json
 
 ### ============================================================
 ### PEDIDO 1 - VARIADO / CASH / DELIVERED
-### Patatas, nachos, montaditos y cerveza.
 ### ============================================================
 
 ### 1.1 CUSTOMER crea Pedido 1
@@ -181,8 +180,6 @@ Authorization: Bearer {{customerToken}}
 
 ### ============================================================
 ### PEDIDO 2 - DIFERENTE / CARD / DELIVERED
-### Ensalada, montaditos de pollo, refrescos y cafés.
-### Nota: al pagar con tarjeta el pedido pasa a cocina automáticamente.
 ### ============================================================
 
 ### 2.1 CUSTOMER crea Pedido 2
