@@ -199,20 +199,17 @@ La API ya está desarrollada y probada por perfiles. En esta rama estoy cerrando
 
 **Qué estoy haciendo ahora:** añadir una última mejora de IA antes de cerrar la release `v1.0.0`.
 
-* [ ] 12.1: Crear rama `feature/openai-admin-chat-memory` desde el punto estable de `release/v1.0.0`.
-* [ ] 12.2: Añadir dependencia/configuración necesaria para memoria JDBC con Spring AI.
-* [ ] 12.3: Crear un endpoint administrativo para preguntar a OpenAI con `conversationId`.
-* [ ] 12.4: Guardar la memoria conversacional con `JdbcChatMemoryRepository`.
-* [ ] 12.5: Mantener OpenAI de feedback y combos como está, sin mezclarlo con este chat.
-* [ ] 12.6: Mantener Ollama/MCP como agente local y herramientas de solo lectura.
-* [ ] 12.7: Añadir requests de prueba en `ADMIN_REQUESTS.http` y `DEMO_REQUESTS.http`.
-* [ ] 12.8: Documentar la nueva funcionalidad en README.
-* [ ] 12.9: Comprobar `./mvnw clean package`.
-* [ ] 12.10: Probar el chat con dos preguntas usando el mismo `conversationId`.
+* [x] 12.1: Crear rama `feature/openai-admin-chat-memory` desde el punto estable de `release/v1.0.0`.
+* [x] 12.2: Añadir dependencia/configuración necesaria para memoria JDBC con Spring AI.
+* [x] 12.3: Crear un endpoint administrativo para preguntar a OpenAI con `conversationId`.
+* [x] 12.4: Guardar la memoria conversacional con `JdbcChatMemoryRepository`.
+* [x] 12.5: Mantener OpenAI de feedback y combos como está, sin mezclarlo con este chat.
+* [x] 12.6: Mantener Ollama/MCP como agente local y herramientas de solo lectura.
+* [x] 12.7: Añadir requests de prueba en `ADMIN_REQUESTS.http` y `DEMO_REQUESTS.http`.
+* [x] 12.8: Documentar la nueva funcionalidad en README.
+* [x] 12.9: Probar el chat con dos preguntas usando el mismo `conversationId`.
 
 ---
-
-## Fase 12: Entrega final - `release/v1.0.0`
 
 ## Fase 13: Entrega final - `release/v1.0.0`
 

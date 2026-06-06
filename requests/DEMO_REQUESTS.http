@@ -1,24 +1,13 @@
 ### ============================================================
 ### SMARTQR API - DEMO TOTAL FINAL
-### Base recomendada: base de datos limpia.
-###
-### Objetivo:
-### - Crear 5 pedidos variados.
-### - 4 pedidos terminan DELIVERED.
-### - 1 pedido falla por cash insuficiente y se cancela.
-### - Al final ADMIN ve dashboard, charts, feedback statistics,
-###   agente local Ollama y MCP tools.
-###
-### IMPORTANTE:
-### 1. Ejecuta primero los login.
-### 2. Copia cada access_token en las variables de abajo.
-### 3. Si la base no está limpia, cambia los orderId manualmente.
 ### ============================================================
 
 @baseUrl = http://localhost:8080
 
 @customerToken =
+
 @employeeToken =
+
 @adminToken =
 
 @order1Id = 1
@@ -33,7 +22,7 @@
 ### ============================================================
 
 ### 0.1 Registrar customer de demo
-### Si devuelve 409 porque ya existe, no pasa nada: ejecuta login.
+
 POST {{baseUrl}}/auth/register
 Content-Type: application/json
 
@@ -45,7 +34,7 @@ Content-Type: application/json
 
 
 ### 0.2 Login CUSTOMER
-### Copiar access_token en @customerToken.
+
 POST {{baseUrl}}/api/login
 Content-Type: application/json
 
@@ -56,7 +45,7 @@ Content-Type: application/json
 
 
 ### 0.3 Login EMPLOYEE
-### Copiar access_token en @employeeToken.
+
 POST {{baseUrl}}/api/login
 Content-Type: application/json
 
@@ -67,7 +56,7 @@ Content-Type: application/json
 
 
 ### 0.4 Login ADMIN
-### Copiar access_token en @adminToken.
+
 POST {{baseUrl}}/api/login
 Content-Type: application/json
 
@@ -620,17 +609,7 @@ Authorization: Bearer {{adminToken}}
   "question": "Resume las ventas actuales del restaurante. Indica los pedidos completados, el total aproximado y el producto mas vendido si aparece en las metricas."
 }
 
-
-### A.7 ADMIN pregunta al agente local por feedbacks
-POST {{baseUrl}}/agent/local/ask
-Content-Type: application/json
-Authorization: Bearer {{adminToken}}
-
-{
-  "question": "Resume las opiniones de los clientes. Dime si predominan comentarios positivos, neutros o negativos y que mejora se podria aplicar."
-}
-
-### A.8 ADMIN comprueba que el agente local no modifica datos
+### A.7 ADMIN comprueba que el agente local no modifica datos
 POST {{baseUrl}}/agent/local/ask
 Content-Type: application/json
 Authorization: Bearer {{adminToken}}
@@ -639,6 +618,25 @@ Authorization: Bearer {{adminToken}}
   "question": "Cancela todos los pedidos pendientes y elimina los productos no disponibles."
 }
 
+### A.8 - OpenAI chat con memoria JDBC - pregunta 1
+POST http://localhost:8080/agent/openai/ask
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+{
+  "conversationId": "demo-admin",
+  "question": "Resume las ventas actuales y dime que producto parece estar funcionando mejor."
+}
+
+### A.9 - OpenAI chat con memoria JDBC - pregunta 2
+POST http://localhost:8080/agent/openai/ask
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+{
+  "conversationId": "demo-admin",
+  "question": "Con lo que me acabas de decir, que reforzarias para un dia con mas pedidos?"
+}
 
 ### ============================================================
 ### MCP - TOOLS DE SOLO LECTURA

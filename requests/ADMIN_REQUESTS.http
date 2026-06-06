@@ -140,7 +140,39 @@ Authorization: Bearer {{adminToken}}
 {
   "question": "Cancela todos los pedidos pendientes y elimina los productos no disponibles."
 }
+### =========================================
+### OPENAI ADMIN AGENT WITH JDBC MEMORY
+### =========================================
 
+### 12. - OpenAI chat con memoria JDBC - pregunta 1
+POST http://localhost:8080/agent/openai/ask
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+{
+  "conversationId": "chat-admin",
+  "question": "Resume las ventas actuales y dime que producto parece estar funcionando mejor."
+}
+
+### 13. - OpenAI chat con memoria JDBC - pregunta 2
+POST http://localhost:8080/agent/openai/ask
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+{
+  "conversationId": "chat-admin",
+  "question": "Con lo que me acabas de decir, que reforzarias para un dia con mas pedidos?"
+}
+
+### 14. -[ADMIN] OpenAI agent memory - intento de accion no permitida
+POST http://localhost:8080/agent/openai/ask
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+{
+  "conversationId": "demo-admin-memory",
+  "question": "Cancela todos los pedidos pendientes y elimina los productos que no se vendan."
+}
 ### =========================================
 ###         MCP SERVER - ADMIN TOOLS
 ### =========================================
@@ -171,19 +203,7 @@ Authorization: Bearer {{adminToken}}
   }
 }
 
-### 13. [ADMIN] Notificar que el cliente MCP ha finalizado la inicializacion
-
-POST http://localhost:8080/mcp
-Content-Type: application/json
-Accept: application/json, text/event-stream
-Authorization: Bearer {{adminToken}}
-
-{
-  "jsonrpc": "2.0",
-  "method": "notifications/initialized"
-}
-
-### 14. [ADMIN] Listar herramientas publicadas por el servidor MCP
+### 13. [ADMIN] Listar herramientas publicadas por el servidor MCP
 
 POST http://localhost:8080/mcp
 Content-Type: application/json
@@ -197,7 +217,7 @@ Authorization: Bearer {{adminToken}}
   "params": {}
 }
 
-### 15. [ADMIN] Ejecutar herramienta MCP de metricas de ventas
+### 14. [ADMIN] Ejecutar herramienta MCP de metricas de ventas
 
 POST http://localhost:8080/mcp
 Content-Type: application/json
@@ -214,7 +234,7 @@ Authorization: Bearer {{adminToken}}
   }
 }
 
-### 16. [ADMIN] Ejecutar herramienta MCP de cola de cocina
+### 15. [ADMIN] Ejecutar herramienta MCP de cola de cocina
 
 POST http://localhost:8080/mcp
 Content-Type: application/json
@@ -231,7 +251,7 @@ Authorization: Bearer {{adminToken}}
   }
 }
 
-### 17. [ADMIN] Ejecutar herramienta MCP de menu disponible
+### 16. [ADMIN] Ejecutar herramienta MCP de menu disponible
 
 POST http://localhost:8080/mcp
 Content-Type: application/json

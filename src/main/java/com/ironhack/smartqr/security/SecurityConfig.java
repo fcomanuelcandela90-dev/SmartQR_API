@@ -82,6 +82,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/dashboard/charts/product-sales").hasRole("ADMIN")
 
                         .requestMatchers(HttpMethod.POST, "/agent/local/ask").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/agent/openai/ask").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/mcp").hasRole("ADMIN")
 
                         .anyRequest().denyAll()
