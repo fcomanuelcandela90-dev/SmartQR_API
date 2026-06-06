@@ -437,7 +437,6 @@ El archivo de excepciones se utiliza aparte para comprobar validaciones, conflic
 * [Class Diagram](docs/CLASS_DIAGRAM.png)
 * [Use Case Diagram](docs/USE_CASE_DIAGRAM.drawio.png)
 * [Technical Diagrams](docs/DIAGRAMS.drawio.png)
-* [Roadmap de arquitectura](docs/ROADMAP_SMARTQR.md)
 * [Task Manager](docs/TASKS_SMARTQR_API.md)
 
 La idea inicial de mostrar al cliente una gráfica de espera con mensajes generados por IA queda documentada como **mejora futura**. En la versión actual, el cliente consulta el estado real de su propio pedido y el personal interno gestiona la cola de cocina.

@@ -199,15 +199,15 @@ La API ya está desarrollada y probada por perfiles. En esta rama estoy cerrando
 
 **Qué estoy haciendo ahora:** añadir una última mejora de IA antes de cerrar la release `v1.0.0`.
 
-* [x] 12.1: Crear rama `feature/openai-admin-chat-memory` desde el punto estable de `release/v1.0.0`.
-* [x] 12.2: Añadir dependencia/configuración necesaria para memoria JDBC con Spring AI.
-* [x] 12.3: Crear un endpoint administrativo para preguntar a OpenAI con `conversationId`.
-* [x] 12.4: Guardar la memoria conversacional con `JdbcChatMemoryRepository`.
-* [x] 12.5: Mantener OpenAI de feedback y combos como está, sin mezclarlo con este chat.
-* [x] 12.6: Mantener Ollama/MCP como agente local y herramientas de solo lectura.
-* [x] 12.7: Añadir requests de prueba en `ADMIN_REQUESTS.http` y `DEMO_REQUESTS.http`.
-* [x] 12.8: Documentar la nueva funcionalidad en README.
-* [x] 12.9: Probar el chat con dos preguntas usando el mismo `conversationId`.
+* [x] Crear rama `feature/openai-admin-chat-memory` desde el punto estable de `release/v1.0.0`.
+* [x] Añadir dependencia/configuración necesaria para memoria JDBC con Spring AI.
+* [x] Crear un endpoint administrativo para preguntar a OpenAI con `conversationId`.
+* [x] Guardar la memoria conversacional con `JdbcChatMemoryRepository`.
+* [x] Mantener OpenAI de feedback y combos como está, sin mezclarlo con este chat.
+* [x] Mantener Ollama/MCP como agente local y herramientas de solo lectura.
+* [x] Añadir requests de prueba en `ADMIN_REQUESTS.http` y `DEMO_REQUESTS.http`.
+* [x] Documentar la nueva funcionalidad en README.
+* [x] Probar el chat con dos preguntas usando el mismo `conversationId`.
 
 ---
 
@@ -215,16 +215,15 @@ La API ya está desarrollada y probada por perfiles. En esta rama estoy cerrando
 
 **Qué haré al final:** cerrar la versión definitiva y subir la entrega.
 
-* [x] 13.1: Preparar el README con la explicación de la API, configuración, endpoints y forma de ejecutar la demo.
-* [x] 13.2: Preparar el roadmap final con las funcionalidades realmente terminadas.
-* [x] 13.3: Actualizar los diagramas para que coincidan con el proyecto final.
-* [x] 13.4: Añadir el Class Diagram y revisar los enlaces de documentación visual.
-* [x] 13.5: Revisar el código archivo por archivo y retirar comentarios o restos que no quiera entregar.
-* [x] 13.6: Comprobar que no se suben tokens, claves, QR o gráficos generados durante las pruebas.
-* [x] 13.7: Preparar el guion de presentación y exportar las diapositivas en PDF/PPTX.
-* [x] 13.8: Ejecutar la comprobación de compilación y el flujo de demo desde base limpia.
-* [ ] 13.9: Revisar que la mejora de memoria OpenAI está documentada y probada.
-* [ ] 13.10: Hacer commit de la release, integrar en `develop` y `main`, crear el tag `v1.0.0` y subir la entrega.
+* [x] Preparar el README con la explicación de la API, configuración, endpoints y forma de ejecutar la demo.
+* [x] Actualizar los diagramas para que coincidan con el proyecto final.
+* [x] Añadir el Class Diagram y revisar los enlaces de documentación visual.
+* [x] Revisar el código archivo por archivo y retirar comentarios o restos que no quiera entregar.
+* [x] Comprobar que no se suben tokens, claves, QR o gráficos generados durante las pruebas.
+* [x] Preparar el guion de presentación y exportar las diapositivas en PDF/PPTX.
+* [x] Ejecutar la comprobación de compilación y el flujo de demo desde base limpia.
+* [x] Revisar que la mejora de memoria OpenAI está documentada y probada.
+* [x] Hacer commit de la release, integrar en `develop` y `main`, crear el tag `v1.0.0` y subir la entrega.
 ---
 
 # Evidencias que ya tengo comprobadas
