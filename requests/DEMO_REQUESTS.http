@@ -8,7 +8,7 @@
 
 @employeeToken =
 
-@adminToken =
+@adminToken =eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBzbWFydHFyLmNvbSIsImV4cCI6MTc4MTEwOTQxNiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL2FwaS9sb2dpbiIsInJvbGVzIjpbIlJPTEVfQURNSU4iXX0.mcLu73MGOQUkkVH_qvf-jwVStHjCwkypuND540_WJoQ
 
 @order1Id = 1
 @order2Id = 2
@@ -277,7 +277,6 @@ Authorization: Bearer {{customerToken}}
 
 ### ============================================================
 ### PEDIDO 3 - CASH / CAMBIO DE ARTICULOS POR EMPLOYEE / DELIVERED
-### El empleado modifica items mientras el pedido sigue PENDING.
 ### ============================================================
 
 ### 3.1 CUSTOMER crea Pedido 3
@@ -399,7 +398,6 @@ Authorization: Bearer {{customerToken}}
 
 ### ============================================================
 ### PEDIDO 4 - CARD / DELIVERED
-### Pedido distinto: ensalada vegana, caprese, zumos y cafés.
 ### ============================================================
 
 ### 4.1 CUSTOMER crea Pedido 4
@@ -491,7 +489,6 @@ Authorization: Bearer {{customerToken}}
 
 ### ============================================================
 ### PEDIDO 5 - CASH INVALIDO / CANCELADO POR EMPLOYEE
-### Este pedido NO debe contar como venta completada.
 ### ============================================================
 
 ### 5.1 CUSTOMER crea Pedido 5
@@ -637,8 +634,6 @@ Authorization: Bearer {{adminToken}}
 
 ### ============================================================
 ### MCP - TOOLS DE SOLO LECTURA
-### No ejecutar POST /mcp vacio.
-### Estas llamadas deben devolver tools o resultados de tools.
 ### ============================================================
 
 ### MCP.1 Listar tools publicadas por el servidor MCP
@@ -704,3 +699,15 @@ Authorization: Bearer {{adminToken}}
     "arguments": {}
   }
 }
+
+### ============================================================
+###                     SALUD Y INFORMACIÓN
+### ============================================================
+
+GET {{baseUrl}}/actuator/health
+Authorization: Bearer {{adminToken}}
+
+###
+
+GET {{baseUrl}}/actuator/info
+Authorization: Bearer {{adminToken}}
