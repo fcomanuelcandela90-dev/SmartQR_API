@@ -8,7 +8,7 @@
 
 @employeeToken =
 
-@adminToken =eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBzbWFydHFyLmNvbSIsImV4cCI6MTc4MTEwOTQxNiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL2FwaS9sb2dpbiIsInJvbGVzIjpbIlJPTEVfQURNSU4iXX0.mcLu73MGOQUkkVH_qvf-jwVStHjCwkypuND540_WJoQ
+@adminToken =
 
 @order1Id = 1
 @order2Id = 2
