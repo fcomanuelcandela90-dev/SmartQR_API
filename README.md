@@ -369,29 +369,11 @@ Configurar en IntelliJ o en el sistema:
 PASS_DB=tu_password_mysql
 OPENAI_API_KEY=tu_api_key_de_openai
 JWT_SECRET=una_clave_larga_y_privada_para_firmar_tokens
-ADMIN_SEED_PASSWORD=contraseña_admin_inicial
-EMPLOYEE_SEED_PASSWORD=contraseña_employee_inicial
-CUSTOMER_SEED_PASSWORD=contraseña_customer_inicial # opcional
 ```
-
-Toma `.env.example` como plantilla para crear un archivo local `.env` (ya ignorado en Git) y cargar fácilmente estas variables en tu entorno de desarrollo.
-
-Si las contraseñas seed no están definidas y la aplicación arranca con el perfil `dev`, el backend utilizará valores de desarrollo e informará mediante un aviso en consola. En otros perfiles, las variables son obligatorias para garantizar un seeding seguro.
 
 La clave JWT no se guarda en el repositorio.
 
 La memoria del chat administrativo con OpenAI se guarda en base de datos mediante JDBC. En entorno de desarrollo, la tabla de memoria se inicializa automáticamente al arrancar la aplicación.
-
-### Generar hashes bcrypt en desarrollo
-
-Si necesitas generar hashes para nuevas contraseñas demo, puedes activar la utilidad `PasswordHashPrinter` arrancando en perfil `dev` con argumentos adicionales:
-
-```bash
-./mvnw spring-boot:run -Dspring-boot.run.profiles=dev \
-  -Dspring-boot.run.arguments="--smartqr.dev.print-hashes=true,--smartqr.dev.passwords=MiPasswordSeguro"
-```
-
-Los hashes aparecerán en consola y puedes copiar el resultado sin almacenar contraseñas planas en el repositorio.
 
 ## Arranque
 

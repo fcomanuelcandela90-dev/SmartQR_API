@@ -1,3 +1,8 @@
+INSERT INTO users (name, email, password, role)
+VALUES
+('SmartQR Admin', 'admin@smartqr.com', '{bcrypt}$2a$10$SGouXeRL3GEpOh7d.Z20BehTI6kEbhEEFuHPo8KT7ZAOb5B5X.I8u', 'ADMIN'),
+('SmartQR Employee', 'employee@smartqr.com', '{bcrypt}$2a$10$kn9ccmVTZjraeaDRtrHqH.yu49uKg4Qkam984tl1xop68atjCiedK', 'EMPLOYEE');
+
 -- ===================================================================
 --                              BEBIDAS
 -- ===================================================================
